@@ -1,0 +1,6 @@
+bin/
+obj/
+*.sln.DotSettings.user
+.idea/
+.DS_Store
+*.db
