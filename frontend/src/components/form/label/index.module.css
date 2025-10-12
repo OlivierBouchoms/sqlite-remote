@@ -1,0 +1,7 @@
+.label {
+    display: flex;
+    font-weight: bold;
+    align-items: center;
+    column-gap: var(--space-1);
+    margin-bottom: var(--space-1);
+}
