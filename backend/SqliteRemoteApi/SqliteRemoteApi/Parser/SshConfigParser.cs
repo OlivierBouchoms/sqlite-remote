@@ -36,10 +36,14 @@ public class SshConfigParser : ISshConfigParser
     /// <returns>SshHost instance</returns>
     SshHost ParseHost(string[] lines, ref int index)
     {
-        var sshHost = new SshHost();
-        sshHost.Name = lines[index].Substring("Host ".Length).Trim();
-        sshHost.HostName = sshHost.Name;
-        sshHost.Port = 22;
+        var host = lines[index].Substring("Host ".Length).Trim();
+
+        var sshHost = new SshHost
+        {
+            Name = host,
+            HostName = host,
+            Port = 22
+        };
 
         index++;
 
@@ -73,6 +77,9 @@ public class SshConfigParser : ISshConfigParser
                 break;
             }
         }
+        
+        if (string.IsNullOrEmpty(sshHost.User)) throw new Exception($"SSH host {sshHost.Name} is missing a User entry.");
+        if (string.IsNullOrEmpty(sshHost.IdentityFile)) throw new Exception($"SSH host {sshHost.Name} is missing a IdentityFile entry.");
         
         return sshHost;
     }

@@ -2,13 +2,13 @@ namespace SqliteRemoteApi.Models;
 
 public class SshHost
 {
-    public string Name { get; set; }
+    public required string Name { get; init; }
     
-    public string HostName { get; set; }
+    public required string HostName { get; set; }
     
-    public int Port { get; set; } = 22;
-    
-    public string User { get; set; }
-    
-    public string IdentityFile { get; set; }
+    public required int Port { get; set; }
+
+    public string User { get; set; } = null!;
+
+    public string IdentityFile { get; set; } = null!;
 }

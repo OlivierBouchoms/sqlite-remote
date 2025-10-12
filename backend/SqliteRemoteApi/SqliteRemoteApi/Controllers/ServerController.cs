@@ -19,7 +19,7 @@ public class ServerController(IDatabaseManager databaseManager) : Controller
 
         if (result.Success)
         {
-            return Ok(new ServerConnectResponseDto(DatabaseOperationSshHostDto.From(result.SshHost), result.DbPath));
+            return Ok(new ServerConnectResponseDto(DatabaseOperationSshHostDto.From(result.SshHost), result.DbPath!));
         }
 
         return Problem(result.Error?.ToString());
