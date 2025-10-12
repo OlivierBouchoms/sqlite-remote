@@ -1,0 +1,28 @@
+.title {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+    align-items: center;
+
+    img {
+        height: calc((var(--font-size-8) + var(--font-size-9)) / 2);
+    }
+
+    h1 {
+        font-size: var(--font-size-7);
+        flex-grow: 1;
+        margin-bottom: 0;
+    }
+}
+
+.nav {
+    background: linear-gradient(to left, var(--accent-1), var(--accent-2));
+    padding: var(--space-4);
+    overflow-y: scroll;
+    min-width: fit-content;
+
+    > * {
+        margin-bottom: var(--space-4);
+    }
+}

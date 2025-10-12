@@ -1,0 +1,25 @@
+.root {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: var(--space-4);
+    flex-flow: wrap;
+}
+
+.title {
+    margin: 0;
+}
+
+.start {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+
+    flex-grow: 1;
+}
+
+.end {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
