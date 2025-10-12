@@ -1,0 +1,47 @@
+name: 'QA checks'
+
+on: [pull_request]
+
+jobs:
+  check-api:
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+    defaults:
+      run:
+        working-directory: ./backend/SqliteRemoteApi
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: ./backend/SqliteRemoteApi/global.json
+
+      - run: dotnet restore
+      - run: dotnet build --no-restore
+
+  check-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file:  ./frontend/.nvmrc
+          cache: 'npm'
+          cache-dependency-path: ./frontend/package-lock.json
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run style
+      - run: npm run ts
+      - run: npm run build
+
+  check-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm i -g @action-validator/core @action-validator/cli --save-dev
+      - run: find .github/workflows/qa-checks.yml | xargs -I {} npx action-validator {}
