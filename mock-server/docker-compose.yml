@@ -1,0 +1,42 @@
+services:
+  alpine-3_22:
+    image: olivierbouchoms/sqlite-remote-ci-alpine:3.22
+    build:
+      context: .
+      dockerfile: alpine-3_22/Dockerfile
+      tags:
+        - olivierbouchoms/sqlite-remote-ci-alpine:3.22
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+    ports:
+      - "4022:22"
+
+  ubuntu-22_04:
+    image: olivierbouchoms/sqlite-remote-ci-ubuntu:22.04
+    build:
+      context: .
+      dockerfile: ubuntu-22_04/Dockerfile
+      tags:
+        - olivierbouchoms/sqlite-remote-ci-ubuntu:22.04
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+    ports:
+      - "4122:22"
+
+  ubuntu-24_04:
+    image: olivierbouchoms/sqlite-remote-ci-ubuntu:24.04
+    build:
+      context: .
+      dockerfile: ubuntu-24_04/Dockerfile
+      tags:
+        - olivierbouchoms/sqlite-remote-ci-ubuntu:24.04
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+    ports:
+      - "4124:22"
