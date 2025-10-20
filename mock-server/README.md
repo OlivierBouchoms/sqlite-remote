@@ -1,42 +1,56 @@
 # Mock server
 
-This Docker container contains an SSH agent and SQLite3 database. It allows for local testing, without requiring access to an external server with an SQLite database.
+These Docker containers contain an SSH agent and SQLite3 database. It allows for local testing, without requiring access to an external server with an SQLite database.
+
+## Containers
+
+| OS           | Version | SSH Port | README                                             |
+|--------------|---------|----------|----------------------------------------------------|
+| Alpine Linux | 3.22    | 4022     | [alpine-3_22/README.md](./alpine-3_22/README.md)   |
+| Ubuntu       | 22.04   | 4122     | [ubuntu-22_04/README.md](./ubuntu-22_04/README.md) |
+| Ubuntu       | 24.04   | 4124     | [ubuntu-24_04/README.md](./ubuntu-24_04/README.md) |
 
 ## Getting started
 
-### Image
+### Run containers
 
 ```shell
-docker build . -t mock-sqlite-server
-docker run -d -p 4022:22 --name mock-sqlite-server mock-sqlite-server 
+docker compose up -d
 ```
 
-### SSH config
+### Generate SSH key
 
-Generate an SSH key and copy it to the Docker container.
-
-The password for the root account is `mock`.
+Generate an SSH key to authenticate with the mock server containers. Copy it to all containers.
 
 ```shell
 ssh-keygen -f ~/.ssh/id_remote_sqlite
 ssh-copy-id -i ~/.ssh/id_remote_sqlite -p 4022 root@localhost
+ssh-copy-id -i ~/.ssh/id_remote_sqlite -p 4122 root@localhost
+ssh-copy-id -i ~/.ssh/id_remote_sqlite -p 4124 root@localhost
 ```
 
-Add the following entry to your SSH config file (`~/.ssh/config`)
+## Build containers
 
+As the containers are built for multiple architectures, Docker buildx is used.
+
+I personally use a remote build host (a Raspberry Pi 4) to build the ARM64 images, while the AMD64 images are built on my dev machine.
+
+### Setup
+
+This script creates a new Buildx builder instance with two nodes, one for ARM64 and one for AMD64.
+
+```shell
+# first add the arm64 remote build host, otherwise the local machine will build arm64 images as well
+docker buildx create --name sqlite-remote-ci --driver docker-container --platform linux/arm64 ssh://<user>@<host> --use
+docker buildx create --name sqlite-remote-ci --driver docker-container --platform linux/amd64 --append
+docker buildx inspect --bootstrap
 ```
-Host mock_sqlite_server
-    HostName 127.0.0.1
-    User root
-    Port 4022
-    IdentityFile ~/.ssh/id_remote_sqlite
+
+### Build and push
+
+```shell
+docker buildx bake --push
 ```
-
-### App database configuration
-
-- Label: Docker mock server
-- Hostname: mock_sqlite_server
-- Database path: /db/sqlite.db
 
 ## Mock database
 
