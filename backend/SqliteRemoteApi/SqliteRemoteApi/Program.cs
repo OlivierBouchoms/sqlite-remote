@@ -42,3 +42,5 @@ app.UseCors(nameof(SqliteRemoteApi));
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
