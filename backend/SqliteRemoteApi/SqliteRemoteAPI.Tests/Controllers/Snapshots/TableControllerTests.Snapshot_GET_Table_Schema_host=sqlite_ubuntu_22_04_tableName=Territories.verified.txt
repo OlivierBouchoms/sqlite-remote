@@ -1,0 +1,24 @@
+﻿{
+  Columns: [
+    {
+      Name: TerritoryID,
+      Type: TEXT,
+      Required: true,
+      PrimaryKey: true
+    },
+    {
+      ColumnId: 1,
+      Name: TerritoryDescription,
+      Type: TEXT,
+      Required: true,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 2,
+      Name: RegionID,
+      Type: INTEGER,
+      Required: true,
+      PrimaryKey: false
+    }
+  ]
+}

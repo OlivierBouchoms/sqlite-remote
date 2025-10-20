@@ -1,0 +1,31 @@
+﻿{
+  Columns: [
+    {
+      Name: CategoryID,
+      Type: INTEGER,
+      Required: false,
+      PrimaryKey: true
+    },
+    {
+      ColumnId: 1,
+      Name: CategoryName,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 2,
+      Name: Description,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 3,
+      Name: Picture,
+      Type: BLOB,
+      Required: false,
+      PrimaryKey: false
+    }
+  ]
+}

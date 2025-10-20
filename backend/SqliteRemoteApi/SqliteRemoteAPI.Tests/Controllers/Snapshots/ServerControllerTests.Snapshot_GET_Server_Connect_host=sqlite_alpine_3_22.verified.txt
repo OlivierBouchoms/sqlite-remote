@@ -1,0 +1,9 @@
+﻿{
+  SshHost: {
+    Name: sqlite_alpine_3_22,
+    HostName: 127.0.0.1,
+    Port: 4022,
+    User: root
+  },
+  DbPath: /db/sqlite.db
+}

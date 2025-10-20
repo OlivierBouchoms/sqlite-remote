@@ -1,0 +1,17 @@
+﻿{
+  Columns: [
+    {
+      Name: CustomerTypeID,
+      Type: TEXT,
+      Required: true,
+      PrimaryKey: true
+    },
+    {
+      ColumnId: 1,
+      Name: CustomerDesc,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    }
+  ]
+}
