@@ -24,8 +24,11 @@ jobs:
       - name: Prepare SSH configuration
         run: |
           mkdir -m 700 -p ~/.ssh/
+          
+          npm ci
           npm run gen:ssh-config
           cp generate-ssh-config/config.gen ~/.ssh/config
+          
           chmod 600 ~/.ssh/config
           ssh-keygen -f ~/.ssh/id_sqlite_remote -t ed25519 -N ""
           chmod 600 ~/.ssh/id_sqlite_remote
