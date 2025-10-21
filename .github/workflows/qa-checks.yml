@@ -17,8 +17,24 @@ jobs:
         with:
           global-json-file: ./backend/SqliteRemoteApi/global.json
 
-      - run: dotnet restore
-      - run: dotnet build --no-restore
+      - name: Restore project
+        run: dotnet restore
+      - name: Build project
+        run: dotnet build --no-restore
+      - name: Prepare SSH configuration
+        run:
+          mkdir -m 700 -p ~/.ssh/
+          npm run gen:ssh-config
+          cp generate-ssh-config/config.gen ~/.ssh/config
+          chmod 600 ~/.ssh/config
+          ssh-keygen -f ~/.ssh/id_sqlite_remote -t ed25519 -N ""
+          chmod 600 ~/.ssh/id_sqlite_remote
+        working-directory: ./ci/scripts
+      - name: Launch mock servers
+        run: docker compose up -d
+        working-directory: ./mock-server
+      - name: Run tests
+        run: dotnet test --no-restore --no-build
 
   check-frontend:
     runs-on: ubuntu-latest
