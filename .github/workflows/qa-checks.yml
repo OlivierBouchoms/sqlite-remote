@@ -22,7 +22,7 @@ jobs:
       - name: Build project
         run: dotnet build --no-restore
       - name: Prepare SSH configuration
-        run:
+        run: |
           mkdir -m 700 -p ~/.ssh/
           npm run gen:ssh-config
           cp generate-ssh-config/config.gen ~/.ssh/config
