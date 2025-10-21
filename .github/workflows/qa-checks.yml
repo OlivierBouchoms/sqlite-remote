@@ -38,6 +38,9 @@ jobs:
         working-directory: ./mock-server
       - name: Run tests
         run: dotnet test --no-restore --no-build
+      - name: Dump logs
+        run: docker compose logs
+        if: failure()
 
   check-frontend:
     runs-on: ubuntu-latest
