@@ -41,6 +41,7 @@ jobs:
       - name: Dump logs
         run: docker compose logs
         if: failure()
+        working-directory: ./mock-server
 
   check-frontend:
     runs-on: ubuntu-latest
