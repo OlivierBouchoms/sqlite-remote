@@ -1,0 +1,24 @@
+﻿{
+  Columns: [
+    {
+      Name: ShipperID,
+      Type: INTEGER,
+      Required: true,
+      PrimaryKey: true
+    },
+    {
+      ColumnId: 1,
+      Name: CompanyName,
+      Type: TEXT,
+      Required: true,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 2,
+      Name: Phone,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    }
+  ]
+}

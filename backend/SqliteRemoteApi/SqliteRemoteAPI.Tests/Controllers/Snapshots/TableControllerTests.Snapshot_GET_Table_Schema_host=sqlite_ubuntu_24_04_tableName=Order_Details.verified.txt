@@ -1,0 +1,46 @@
+﻿{
+  Columns: [
+    {
+      Name: OrderID,
+      Type: INTEGER,
+      Required: true,
+      PrimaryKey: true
+    },
+    {
+      ColumnId: 1,
+      Name: ProductID,
+      Type: INTEGER,
+      Required: true,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 2,
+      Name: UnitPrice,
+      Required: true,
+      DefaultValue: {
+        ValueKind: String
+      },
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 3,
+      Name: Quantity,
+      Type: INTEGER,
+      Required: true,
+      DefaultValue: {
+        ValueKind: String
+      },
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 4,
+      Name: Discount,
+      Type: REAL,
+      Required: true,
+      DefaultValue: {
+        ValueKind: String
+      },
+      PrimaryKey: false
+    }
+  ]
+}

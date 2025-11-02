@@ -1,0 +1,9 @@
+﻿{
+  SshHost: {
+    Name: sqlite_ubuntu_22_04,
+    HostName: 127.0.0.1,
+    Port: 4122,
+    User: root
+  },
+  DbPath: /db/sqlite.db
+}

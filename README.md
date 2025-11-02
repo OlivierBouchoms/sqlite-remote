@@ -64,17 +64,22 @@ The app can't be installed directly yet. Docker Compose support is coming soon.
 
 ## Getting started
 
-A data source needs to be specified in your SSH config file (`~/.ssh/config`). An example can be found below:
+A data source needs to be specified in your SSH config file (`~/.ssh/config`). An example for the [Alpine 3.22 mock server](mock-server/alpine-3_22) can be found below:
 
 ```
-Host mock_sqlite_server
+Host sqlite_alpine_3_22
     HostName 127.0.0.1
     User root
     Port 4022
-    IdentityFile ~/.ssh/id_remote_sqlite
+    IdentityFile ~/.ssh/id_sqlite_remote
+    StrictHostKeyChecking no
 ```
 
-Refer to the README files in the [backend](./backend) and [frontend](./frontend) folders.
+Refer to the following README files:
+ 
+- [backend](./backend) 
+- [frontend](./frontend) 
+- [mock server](./mock-server) (if you want to run a local test server)
 
 ### SSH authentication methods
 
@@ -86,7 +91,7 @@ Refer to the README files in the [backend](./backend) and [frontend](./frontend)
 
 ### SSH config fields
 
-The following SSH config fields of a host entry are currently parsed and supported:
+The following SSH config fields of a host entry are currently parsed and supported by the application:
 
 * HostName (optional, defaults to name of host entry)
 * User (required)
@@ -97,5 +102,4 @@ The following SSH config fields of a host entry are currently parsed and support
 
 * [Backend](./backend): .NET REST API which accesses the SQLite database over SSH
 * [Frontend](./frontend): React user interface
-* [Mock server](./mock-server): a Docker container which contains a SQLite database and an SSH server, for local testing
-
+* [Mock server](./mock-server): a Docker compse stack which contains a SQLite database and an SSH server, for local testing

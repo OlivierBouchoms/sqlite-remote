@@ -1,0 +1,20 @@
+# {{os}} {{version}} mock server
+
+## SSH config
+
+Add the following entry to your SSH config file (`~/.ssh/config`)
+
+```
+Host sqlite_{{os_snake_case}}_{{version_snake_case}}
+    HostName 127.0.0.1
+    User root
+    Port {{port}}
+    IdentityFile ~/.ssh/id_sqlite_remote
+    StrictHostKeyChecking no
+```
+
+## App database configuration
+
+- Label: {{os}} {{version}} mock server
+- Hostname: sqlite_{{os_snake_case}}_{{version_snake_case}}
+- Database path: /db/sqlite.db

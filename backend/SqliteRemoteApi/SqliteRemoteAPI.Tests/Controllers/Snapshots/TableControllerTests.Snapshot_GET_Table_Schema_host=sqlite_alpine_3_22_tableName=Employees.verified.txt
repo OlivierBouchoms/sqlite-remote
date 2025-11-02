@@ -1,0 +1,127 @@
+﻿{
+  Columns: [
+    {
+      Name: EmployeeID,
+      Type: INTEGER,
+      Required: false,
+      PrimaryKey: true
+    },
+    {
+      ColumnId: 1,
+      Name: LastName,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 2,
+      Name: FirstName,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 3,
+      Name: Title,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 4,
+      Name: TitleOfCourtesy,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 5,
+      Name: BirthDate,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 6,
+      Name: HireDate,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 7,
+      Name: Address,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 8,
+      Name: City,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 9,
+      Name: Region,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 10,
+      Name: PostalCode,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 11,
+      Name: Country,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 12,
+      Name: HomePhone,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 13,
+      Name: Extension,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 14,
+      Name: Photo,
+      Type: BLOB,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 15,
+      Name: Notes,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 16,
+      Name: ReportsTo,
+      Type: INTEGER,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 17,
+      Name: PhotoPath,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    }
+  ]
+}

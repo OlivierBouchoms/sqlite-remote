@@ -1,0 +1,87 @@
+﻿{
+  Columns: [
+    {
+      Name: SupplierID,
+      Type: INTEGER,
+      Required: true,
+      PrimaryKey: true
+    },
+    {
+      ColumnId: 1,
+      Name: CompanyName,
+      Type: TEXT,
+      Required: true,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 2,
+      Name: ContactName,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 3,
+      Name: ContactTitle,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 4,
+      Name: Address,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 5,
+      Name: City,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 6,
+      Name: Region,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 7,
+      Name: PostalCode,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 8,
+      Name: Country,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 9,
+      Name: Phone,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 10,
+      Name: Fax,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 11,
+      Name: HomePage,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    }
+  ]
+}
