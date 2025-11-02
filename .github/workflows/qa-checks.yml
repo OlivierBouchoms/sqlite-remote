@@ -33,10 +33,19 @@ jobs:
           chmod 600 ~/.ssh/config
           ssh-keygen -f ~/.ssh/id_sqlite_remote -t ed25519 -N ""
           chmod 600 ~/.ssh/id_sqlite_remote
+          chmod 600 ~/.ssh/id_sqlite_remote.pub
         working-directory: ./ci/scripts
       - name: Launch mock servers
         run: docker compose up -d
         working-directory: ./mock-server
+      - name: Check SSH authorized keys
+        run: |
+          docker compose exec sqlite_alpine_3_22 cat /root/.ssh/authorized_keys
+          docker compose exec ubuntu_22_04 cat /root/.ssh/authorized_keys
+          docker compose exec ubuntu_24_04 cat /root/.ssh/authorized_keys
+        working-directory: ./mock-server
+      - name: Debug SSH connectivity
+        run: ssh -vvv sqlite_alpine_3_22 echo "SSH connection successful"
       - name: Run tests
         run: dotnet test --no-restore --no-build
       - name: Dump logs
