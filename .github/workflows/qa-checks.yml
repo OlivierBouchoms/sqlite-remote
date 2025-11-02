@@ -39,6 +39,8 @@ jobs:
         working-directory: ./mock-server
       - name: Check SSH authorized keys
         run: |
+          docker compose exec alpine-3_22 chown root:root /root/.ssh/authorized_keys
+          docker compose exec alpine-3_22 chmod 600 /root/.ssh/authorized_keys
           docker compose exec alpine-3_22 cat /root/.ssh/authorized_keys
           docker compose exec ubuntu-22_04 cat /root/.ssh/authorized_keys
           docker compose exec ubuntu-24_04 cat /root/.ssh/authorized_keys
