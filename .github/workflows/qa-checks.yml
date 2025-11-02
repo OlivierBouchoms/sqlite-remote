@@ -2,6 +2,13 @@ name: 'QA checks'
 
 on: [pull_request]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   check-api:
     runs-on: ubuntu-latest
@@ -16,6 +23,13 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./backend/SqliteRemoteApi/global.json
+      - name: Cache NuGet
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
       - name: Restore project
         run: dotnet restore
@@ -30,31 +44,21 @@ jobs:
           cp generate-ssh-config/config.gen ~/.ssh/config
           
           chmod 600 ~/.ssh/config
+        working-directory: ./ci/scripts
+      - name: Generate SSH key
+        run: |
           ssh-keygen -f ~/.ssh/id_sqlite_remote -t ed25519 -N ""
           chmod 600 ~/.ssh/id_sqlite_remote
           chmod 644 ~/.ssh/id_sqlite_remote.pub
-        working-directory: ./ci/scripts
       - name: Launch mock servers
         run: docker compose up -d
         working-directory: ./mock-server
-      - name: Check SSH authorized keys
-        run: |
-          docker compose exec alpine-3_22 cat /root/.ssh/authorized_keys2
-          docker compose exec ubuntu-22_04 cat /root/.ssh/authorized_keys2
-          docker compose exec ubuntu-24_04 cat /root/.ssh/authorized_keys2
-          cat ~/.ssh/id_sqlite_remote.pub
-        working-directory: ./mock-server
-      - name: Check SSH permissions in container
-        run: docker compose exec alpine-3_22 ls -la /root/.ssh
-        working-directory: ./mock-server
-      - name: Debug SSH connectivity
-        run: ssh -vvv -i ~/.ssh/id_sqlite_remote sqlite_alpine_3_22 echo "SSH connection successful"
       - name: Run tests
         run: dotnet test --no-restore --no-build
-      - name: Dump logs
-        run: docker compose logs
-        if: failure()
+      - name: Stop mock servers
+        run: docker compose down
         working-directory: ./mock-server
+        if: always()
 
   check-frontend:
     runs-on: ubuntu-latest
