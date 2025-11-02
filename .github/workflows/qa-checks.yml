@@ -40,9 +40,9 @@ jobs:
         working-directory: ./mock-server
       - name: Check SSH authorized keys
         run: |
-          docker compose exec sqlite_alpine_3_22 cat /root/.ssh/authorized_keys
-          docker compose exec ubuntu_22_04 cat /root/.ssh/authorized_keys
-          docker compose exec ubuntu_24_04 cat /root/.ssh/authorized_keys
+          docker compose exec alpine-3_22 cat /root/.ssh/authorized_keys
+          docker compose exec ubuntu-22_04 cat /root/.ssh/authorized_keys
+          docker compose exec ubuntu-24_04 cat /root/.ssh/authorized_keys
         working-directory: ./mock-server
       - name: Debug SSH connectivity
         run: ssh -vvv sqlite_alpine_3_22 echo "SSH connection successful"
