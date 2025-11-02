@@ -46,7 +46,7 @@ jobs:
           cat ~/.ssh/id_sqlite_remote.pub
         working-directory: ./mock-server
       - name: Debug SSH connectivity
-        run: ssh -vvv sqlite_alpine_3_22 echo "SSH connection successful"
+        run: ssh -vvv -i ~/.ssh/id_sqlite_remote sqlite_alpine_3_22 echo "SSH connection successful"
       - name: Run tests
         run: dotnet test --no-restore --no-build
       - name: Dump logs
