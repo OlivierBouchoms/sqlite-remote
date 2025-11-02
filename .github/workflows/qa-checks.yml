@@ -27,6 +27,7 @@ jobs:
           
           npm ci
           npm run gen:ssh-config
+          cat ~/.ssh/config || echo "No SSH config found"
           cp generate-ssh-config/config.gen ~/.ssh/config
           
           chmod 600 ~/.ssh/config
