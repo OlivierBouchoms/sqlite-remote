@@ -27,7 +27,6 @@ jobs:
           
           npm ci
           npm run gen:ssh-config
-          cat ~/.ssh/config || echo "No SSH config found"
           cp generate-ssh-config/config.gen ~/.ssh/config
           
           chmod 600 ~/.ssh/config
@@ -44,6 +43,9 @@ jobs:
           docker compose exec ubuntu-22_04 cat /root/.ssh/authorized_keys
           docker compose exec ubuntu-24_04 cat /root/.ssh/authorized_keys
           cat ~/.ssh/id_sqlite_remote.pub
+        working-directory: ./mock-server
+      - name: Check SSH permissions in container
+        run: docker compose exec alpine-3_22 ls -la /root/.ssh
         working-directory: ./mock-server
       - name: Debug SSH connectivity
         run: ssh -vvv -i ~/.ssh/id_sqlite_remote sqlite_alpine_3_22 echo "SSH connection successful"
