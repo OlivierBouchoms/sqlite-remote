@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:22.04
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends sqlite3 openssh-server && \
@@ -7,11 +7,14 @@ RUN apt-get update && \
 RUN mkdir -p /var/run/sshd && ssh-keygen -A
 
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed -i 's@^[[:space:]]*#\?[[:space:]]*AuthorizedKeysFile[[:space:]]*.*@AuthorizedKeysFile .ssh/authorized_keys2@' /etc/ssh/sshd_config
+
+WORKDIR /
+COPY ubuntu-22_04/entrypoint.sh entrypoint.sh
 
 WORKDIR /db
-
-COPY ../sample.db sqlite.db
+COPY sample.db sqlite.db
 
 EXPOSE 22
 
-CMD ["/usr/sbin/sshd", "-D"]
+CMD ["/entrypoint.sh"]

@@ -9,7 +9,7 @@ services:
       x-bake:
         platforms: [linux/amd64, linux/arm64]
     volumes:
-      - ${HOME}/.ssh/id_sqlite_remote.pub:/root/.ssh/authorized_keys
+      - ${HOME}/.ssh/id_sqlite_remote.pub:/root/.ssh/authorized_keys:ro
     ports:
       - "4022:22"
 
@@ -23,7 +23,7 @@ services:
       x-bake:
         platforms: [linux/amd64, linux/arm64]
     volumes:
-     - ${HOME}/.ssh/id_sqlite_remote.pub:/root/.ssh/authorized_keys
+     - ${HOME}/.ssh/id_sqlite_remote.pub:/root/.ssh/authorized_keys:ro
     ports:
       - "4122:22"
 
@@ -37,6 +37,6 @@ services:
       x-bake:
         platforms: [linux/amd64, linux/arm64]
     volumes:
-      - ${HOME}/.ssh/id_sqlite_remote.pub:/root/.ssh/authorized_keys
+      - ${HOME}/.ssh/id_sqlite_remote.pub:/root/.ssh/authorized_keys:ro
     ports:
       - "4124:22"

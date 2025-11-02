@@ -14,7 +14,7 @@ These Docker containers contain an SSH agent and SQLite3 database. It allows for
 
 ### Generate SSH key
 
-Generate an SSH key to authenticate with the mock server containers. The public is automatically mounted in the Docker Compose containers.
+Generate an SSH key to authenticate with the mock server containers. The public key is automatically mounted in the Docker Compose containers.
 
 ```shell
 ssh-keygen -f ~/.ssh/id_sqlite_remote -t ed25519 -N ""
