@@ -9,8 +9,13 @@
 @import '@radix-ui/themes/utilities.css';
 
 /*
-  This file conatins some default (global) style overrides.
+  This file contains some default (global) style overrides and global variables.
 */
+
+:root {
+    /* used for determining the maximum size of UI elements in AppLayoutContext */
+    --page-min-width: 192px;
+}
 
 body {
     margin: 0;

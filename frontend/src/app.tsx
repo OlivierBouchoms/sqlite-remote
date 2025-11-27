@@ -10,6 +10,7 @@ import RootPage from './routes/root.tsx';
 import { DatabaseOverviewRoute } from './routes/database';
 import { DatabaseTableRoute } from './routes/database/table';
 import { OpenAPI } from './generated/api/requests';
+import { AppLayoutContextProvider } from './context/appLayoutContext.tsx';
 
 OpenAPI.BASE = import.meta.env.VITE_API_URL;
 OpenAPI.CREDENTIALS = 'omit';
@@ -71,11 +72,13 @@ export function App() {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <AppThemeContextProvider onThemeChange={setTheme}>
-                <Theme accentColor={'blue'} appearance={theme} data-theme={theme}>
-                    <RouterProvider router={router} />
-                </Theme>
-            </AppThemeContextProvider>
+            <AppLayoutContextProvider>
+                <AppThemeContextProvider onThemeChange={setTheme}>
+                    <Theme accentColor={'blue'} appearance={theme} data-theme={theme}>
+                        <RouterProvider router={router} />
+                    </Theme>
+                </AppThemeContextProvider>
+            </AppLayoutContextProvider>
         </QueryClientProvider>
     );
 }

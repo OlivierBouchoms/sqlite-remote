@@ -13,8 +13,11 @@ import { DatabaseConfiguration } from '../../domain/model/databaseConfiguration.
 import { DatabaseTable } from '../../domain/types/databaseTable.ts';
 import { useTableServiceGetApiTableByNameData, useTableServiceGetApiTableByNameSchema } from '../../generated/api/queries';
 import { QueryKey } from '../../domain/hooks/common/QueryKey.ts';
+import { useAppLayout } from '../../context/appLayoutContext.tsx';
 
 export default function NavigationMenu() {
+    const { registerChild } = useAppLayout();
+
     const [searchParams, setSearchParams] = useSearchParams();
 
     const { data: databases, isLoading: isDatabasesLoading } = useDatabaseConfigurations();
@@ -71,13 +74,13 @@ export default function NavigationMenu() {
             active: !!selectedTable && table.name === selectedTable.name,
             id: table.name,
             label: table.name,
-            link: routes.database.table(selectedConfig?.id ?? '', table.name),
+            link: routes.database.table(selectedConfig?.id ?? '', table.name, searchParams),
             data: table,
         }));
-    }, [selectedConfig, selectedTable, tables]);
+    }, [selectedConfig, selectedTable, tables, searchParams]);
 
     return (
-        <nav className={styles.nav}>
+        <nav className={styles.nav} ref={(e) => registerChild('nav', e)}>
             <div className={styles.title}>
                 <img alt={t('domain.app.titleLogo')} height='47.5px' width='38px' src='/logo.svg' />
                 <h1>{t('domain.app.title')}</h1>
@@ -112,7 +115,7 @@ export default function NavigationMenu() {
                     items: [
                         {
                             label: t('nav.tables.contextMenu.open'),
-                            onClick: (item) => !!selectedConfig && navigate(routes.database.table(selectedConfig.id, item.name)),
+                            onClick: (item) => !!selectedConfig && navigate(routes.database.table(selectedConfig.id, item.name, searchParams)),
                             variant: 'default',
                             disabled: (item) => item.name === selectedTable?.name,
                         },

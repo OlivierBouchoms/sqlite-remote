@@ -4,4 +4,5 @@ export enum QueryKey {
     DatabaseTables = 'database-tables',
     DatabaseTableData = 'database-table-data',
     DatabaseTableSchema = 'database-table-schema',
+    SidebarMenuItems = 'sidebar-menu-items',
 }
