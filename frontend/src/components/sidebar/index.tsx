@@ -34,6 +34,8 @@ export default function Sidebar() {
         return !!param && SidebarMenuItemTypes.includes(param as SidebarMenuItemType) ? (param as SidebarMenuItemType) : null;
     }, [searchParams]);
 
+    const sidebarExpanded = !!sidebarItem;
+
     const setItem = useCallback(
         (type: SidebarMenuItemType) => {
             setSearchParams((p) => {
@@ -66,13 +68,13 @@ export default function Sidebar() {
         if (!rootElement.current) return;
 
         rootElementInitialWidth.current = rootElement.current.offsetWidth;
-        isExpanded.current = !!sidebarItem;
+        isExpanded.current = sidebarExpanded;
 
         updateWidth();
-    }, [rootElement, menuItems, sidebarItem, updateWidth]);
+    }, [rootElement, menuItems, sidebarExpanded, updateWidth]);
 
     useEffect(() => {
-        if (!rootElement.current || !sidebarItem) return;
+        if (!rootElement.current || !sidebarExpanded) return; // sidebar can't be resized if it is collapsed
 
         const interactable = interact(rootElement.current).resizable({
             edges: {
@@ -96,7 +98,7 @@ export default function Sidebar() {
         });
 
         return () => interactable.unset();
-    }, [rootElement, registerChildElement, sidebarItem, updateWidth]);
+    }, [rootElement, registerChildElement, sidebarExpanded, updateWidth]);
 
     return (
         <div
@@ -109,7 +111,7 @@ export default function Sidebar() {
             <section className={styles.menu}>
                 <SidebarSection activeItem={sidebarItem} items={menuItems} onItemClick={setItem} />
             </section>
-            <div className={styles.content} style={{ display: sidebarItem ? 'block' : 'none' }}>
+            <div className={styles.content} style={{ display: sidebarExpanded ? 'block' : 'none' }}>
                 <QueryConsole open={sidebarItem === 'query_console'} />
             </div>
         </div>
