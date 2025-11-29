@@ -26,11 +26,3 @@
 .start {
     flex-grow: 1;
 }
-
-.end {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    flex-wrap: wrap;
-    max-width: 100%;
-}
