@@ -9,6 +9,8 @@ import { SidebarMenuItemType } from '../../config/sidebar.tsx';
 import { useGetSidebarMenuItems } from '../../domain/hooks/useGetSidebarMenuItems.ts';
 import interact from 'interactjs';
 import { useAppLayout } from '../../context/appLayoutContext.tsx';
+import { nameof } from '../../utils/nameof.ts';
+import { DatabaseOverviewRouteParams } from '../../pages/databaseOverview';
 
 export default function Sidebar() {
     const { registerChild, getMaxSidebarWidth } = useAppLayout();
@@ -27,7 +29,7 @@ export default function Sidebar() {
     const { data: menuItems } = useGetSidebarMenuItems({ enabled: !!selectedConfig });
 
     const sidebarItem = useMemo((): SidebarMenuItemType | null => {
-        const param = searchParams.get('sidebar_item');
+        const param = searchParams.get(nameof<DatabaseOverviewRouteParams>('sidebarItem'));
 
         return !!param && SidebarMenuItemTypes.includes(param as SidebarMenuItemType) ? (param as SidebarMenuItemType) : null;
     }, [searchParams]);
@@ -35,12 +37,12 @@ export default function Sidebar() {
     const setItem = useCallback(
         (type: SidebarMenuItemType) => {
             setSearchParams((p) => {
-                const oldItem = p.get('sidebar_item');
+                const oldItem = p.get(nameof<DatabaseOverviewRouteParams>('sidebarItem'));
 
                 if (oldItem === type) {
-                    p.delete('sidebar_item');
+                    p.delete(nameof<DatabaseOverviewRouteParams>('sidebarItem'));
                 } else {
-                    p.set('sidebar_item', type);
+                    p.set(nameof<DatabaseOverviewRouteParams>('sidebarItem'), type);
                 }
                 return p;
             });
