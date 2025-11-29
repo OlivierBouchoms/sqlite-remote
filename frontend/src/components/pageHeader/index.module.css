@@ -8,18 +8,21 @@
 
 .title {
     margin: 0;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
-.start {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-
-    flex-grow: 1;
-}
-
+.start,
 .end {
     display: flex;
     align-items: center;
     gap: var(--space-3);
+    flex-wrap: wrap;
+    max-width: 100%;
+}
+
+.start {
+    flex-grow: 1;
 }

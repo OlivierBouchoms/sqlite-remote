@@ -6,6 +6,7 @@
     padding: var(--space-4);
     margin: 0 auto;
     width: 100%;
+    min-width: var(--page-min-width);
 
     min-height: 100vh;
     max-height: 100vh;

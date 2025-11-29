@@ -136,6 +136,9 @@ export const en = {
                     },
                 },
             },
+            queryConsole: {
+                label: 'Query console',
+            },
         },
     },
 };

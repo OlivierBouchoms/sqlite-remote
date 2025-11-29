@@ -3,6 +3,11 @@ import { Skeleton } from '@radix-ui/themes';
 import { DatabaseConnectionStatus } from '../../components/databaseConnectionStatus';
 import { Page } from '../../components/page';
 import { PageHeader } from '../../components/pageHeader';
+import { SidebarMenuItemType } from '../../config/sidebar.tsx';
+
+export type DatabaseOverviewRouteParams = {
+    sidebarItem?: SidebarMenuItemType;
+};
 
 export const DatabaseOverviewPage = () => {
     const { selectedConfig, isConfigLoading } = useDatabaseConfiguration();

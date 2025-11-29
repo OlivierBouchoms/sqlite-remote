@@ -14,8 +14,14 @@ import { PageContent } from '../../components/pageContent';
 import { TableDataSegment } from '../../features/tableDataSegment';
 import { useTableServiceGetApiTableByNameData, useTableServiceGetApiTableByNameSchema } from '../../generated/api/queries';
 import { QueryKey } from '../../domain/hooks/common/QueryKey.ts';
+import { nameof } from '../../utils/nameof.ts';
+import { DatabaseOverviewRouteParams } from '../databaseOverview';
 
 export type DatabaseTablePageSegment = 'data' | 'schema';
+
+export type DatabaseTableRouteParams = {
+    segment?: DatabaseTablePageSegment;
+} & Pick<DatabaseOverviewRouteParams, 'sidebarItem'>;
 
 export const DatabaseTablePage = () => {
     const [isTableLoading, setIsTableLoading] = useState<boolean>(true);
@@ -53,7 +59,7 @@ export const DatabaseTablePage = () => {
     }, [t]);
 
     const segment = useMemo(() => {
-        const segmentParam = searchParams.get('segment');
+        const segmentParam = searchParams.get(nameof<DatabaseTableRouteParams>('segment'));
 
         const mappedSegment = segmentedControlItems.find((sc) => sc.value === segmentParam);
 
@@ -98,7 +104,7 @@ export const DatabaseTablePage = () => {
                 segmentLoading={isSegmentLoading}
                 navigation={[
                     {
-                        url: routes.database.detail(selectedConfig?.id ?? ''),
+                        url: routes.database.detail(selectedConfig?.id ?? '', searchParams),
                         icon: <FaArrowLeft />,
                         alt: t('header.back'),
                     },

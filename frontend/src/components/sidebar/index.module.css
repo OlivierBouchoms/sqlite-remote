@@ -1,0 +1,29 @@
+.sidebar {
+    display: flex;
+    flex-direction: row-reverse;
+    min-width: fit-content;
+    border-left: 1px solid var(--gray-7);
+
+    max-width: -webkit-fill-available;
+    max-width: -moz-available;
+    max-width: stretch;
+
+    touch-action: none;
+}
+
+.menu {
+    background: linear-gradient(to right, var(--accent-1), var(--accent-2));
+    padding: var(--space-3);
+    overflow-y: scroll;
+    flex-shrink: 0;
+
+    > * {
+        margin-bottom: var(--space-2);
+    }
+}
+
+.content {
+    background: var(--accent-1);
+    flex-grow: 1;
+    overflow-y: scroll;
+}

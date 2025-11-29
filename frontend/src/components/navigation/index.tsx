@@ -13,8 +13,15 @@ import { DatabaseConfiguration } from '../../domain/model/databaseConfiguration.
 import { DatabaseTable } from '../../domain/types/databaseTable.ts';
 import { useTableServiceGetApiTableByNameData, useTableServiceGetApiTableByNameSchema } from '../../generated/api/queries';
 import { QueryKey } from '../../domain/hooks/common/QueryKey.ts';
+import { useAppLayout } from '../../context/appLayoutContext.tsx';
+import { DatabaseTablePageSegment, DatabaseTableRouteParams } from '../../pages/databaseTable';
+import { SidebarMenuItemType } from '../../config/sidebar.tsx';
+import { nameof } from '../../utils/nameof.ts';
+import { DatabaseOverviewRouteParams } from '../../pages/databaseOverview';
 
 export default function NavigationMenu() {
+    const { registerChildElement } = useAppLayout();
+
     const [searchParams, setSearchParams] = useSearchParams();
 
     const { data: databases, isLoading: isDatabasesLoading } = useDatabaseConfigurations();
@@ -55,14 +62,19 @@ export default function NavigationMenu() {
     const databaseSectionItems = useMemo((): NavigationMenuItemProps<DatabaseConfiguration>[] => {
         if (!databases) return [];
 
-        return databases.map((db) => ({
-            active: !!selectedConfig && db.id === selectedConfig.id,
-            id: db.id,
-            label: db.label,
-            link: routes.database.detail(db.id),
-            data: db,
-        }));
-    }, [selectedConfig, databases]);
+        return databases.map((db) => {
+            // preserve the params if we navigate to the same database (e.g. to remove focus from a table)
+            const params = selectedConfig?.id == db.id ? searchParams : {};
+
+            return {
+                active: !!selectedConfig && db.id === selectedConfig.id,
+                id: db.id,
+                label: db.label,
+                link: routes.database.detail(db.id, params),
+                data: db,
+            };
+        });
+    }, [databases, selectedConfig, searchParams]);
 
     const tableSectionItems = useMemo((): NavigationMenuItemProps<DatabaseTable>[] => {
         if (!tables) return [];
@@ -71,13 +83,16 @@ export default function NavigationMenu() {
             active: !!selectedTable && table.name === selectedTable.name,
             id: table.name,
             label: table.name,
-            link: routes.database.table(selectedConfig?.id ?? '', table.name),
+            link: routes.database.table(selectedConfig?.id ?? '', table.name, {
+                segment: searchParams.get(nameof<DatabaseTableRouteParams>('segment')) as DatabaseTablePageSegment,
+                sidebarItem: searchParams.get(nameof<DatabaseOverviewRouteParams>('sidebarItem')) as SidebarMenuItemType,
+            }),
             data: table,
         }));
-    }, [selectedConfig, selectedTable, tables]);
+    }, [selectedConfig, selectedTable, tables, searchParams]);
 
     return (
-        <nav className={styles.nav}>
+        <nav className={styles.nav} ref={(e) => registerChildElement('nav', e)}>
             <div className={styles.title}>
                 <img alt={t('domain.app.titleLogo')} height='47.5px' width='38px' src='/logo.svg' />
                 <h1>{t('domain.app.title')}</h1>
@@ -95,7 +110,9 @@ export default function NavigationMenu() {
                     items: [
                         {
                             label: t('nav.databases.contextMenu.open'),
-                            onClick: (item) => navigate(routes.database.detail(item.id)),
+                            onClick: (item) => {
+                                navigate(routes.database.detail(item.id, {}));
+                            },
                             variant: 'default',
                             disabled: (item) => item.id === selectedConfig?.id,
                         },
@@ -112,7 +129,13 @@ export default function NavigationMenu() {
                     items: [
                         {
                             label: t('nav.tables.contextMenu.open'),
-                            onClick: (item) => !!selectedConfig && navigate(routes.database.table(selectedConfig.id, item.name)),
+                            onClick: (item) =>
+                                !!selectedConfig &&
+                                navigate(
+                                    routes.database.table(selectedConfig.id, item.name, {
+                                        sidebarItem: searchParams.get(nameof<DatabaseTableRouteParams>('sidebarItem')) as SidebarMenuItemType,
+                                    })
+                                ),
                             variant: 'default',
                             disabled: (item) => item.name === selectedTable?.name,
                         },
