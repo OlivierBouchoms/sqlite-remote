@@ -6,11 +6,11 @@ import { DatabaseConfigurationContextProvider } from '../context/databaseConfigu
 import { useAppLayout } from '../context/appLayoutContext.tsx';
 
 export default function RootPage() {
-    const { registerLayout } = useAppLayout();
+    const { registerLayoutElement } = useAppLayout();
 
     return (
         <DatabaseConfigurationContextProvider>
-            <div className={styles.layout} ref={(e) => registerLayout(e)}>
+            <div className={styles.layout} ref={(e) => registerLayoutElement(e)}>
                 <NavigationMenu />
                 <Outlet />
                 <Sidebar />

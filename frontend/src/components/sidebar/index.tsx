@@ -13,7 +13,7 @@ import { nameof } from '../../utils/nameof.ts';
 import { DatabaseOverviewRouteParams } from '../../pages/databaseOverview';
 
 export default function Sidebar() {
-    const { registerChild, getMaxSidebarWidth } = useAppLayout();
+    const { registerChildElement, getMaxSidebarWidth } = useAppLayout();
 
     const rootElement = useRef<HTMLDivElement>();
 
@@ -96,14 +96,14 @@ export default function Sidebar() {
         });
 
         return () => interactable.unset();
-    }, [rootElement, registerChild, sidebarItem, updateWidth]);
+    }, [rootElement, registerChildElement, sidebarItem, updateWidth]);
 
     return (
         <div
             className={styles.sidebar}
             ref={(e) => {
                 rootElement.current = e!;
-                registerChild('sidebar', e);
+                registerChildElement('sidebar', e);
             }}
         >
             <section className={styles.menu}>

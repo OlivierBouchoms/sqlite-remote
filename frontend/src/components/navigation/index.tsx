@@ -20,7 +20,7 @@ import { nameof } from '../../utils/nameof.ts';
 import { DatabaseOverviewRouteParams } from '../../pages/databaseOverview';
 
 export default function NavigationMenu() {
-    const { registerChild } = useAppLayout();
+    const { registerChildElement } = useAppLayout();
 
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -92,7 +92,7 @@ export default function NavigationMenu() {
     }, [selectedConfig, selectedTable, tables, searchParams]);
 
     return (
-        <nav className={styles.nav} ref={(e) => registerChild('nav', e)}>
+        <nav className={styles.nav} ref={(e) => registerChildElement('nav', e)}>
             <div className={styles.title}>
                 <img alt={t('domain.app.titleLogo')} height='47.5px' width='38px' src='/logo.svg' />
                 <h1>{t('domain.app.title')}</h1>
