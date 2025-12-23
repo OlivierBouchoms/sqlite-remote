@@ -21,12 +21,12 @@ The local machine runs the SQLite Remote API and frontend client application.
 
 #### OS
 
-| Platform       | Status     | Notes                           |
-|----------------|------------|---------------------------------|
-| macOS          | Supported  |                                 |
-| Linux (Ubuntu) | Unknown    | Expected to work, needs testing |
-| Linux (other)  | Unknown    | Expected to work, needs testing |
-| Windows        | Unknown    | Not planned as of now           |
+| Platform       | Status     | Notes                            |
+|----------------|------------|----------------------------------|
+| macOS          | Supported  | Backend is tested on dev machine |
+| Linux (Ubuntu) | Unknown    | Backend is tested in Github CI   |
+| Linux (other)  | Unknown    | Expected to work, needs testing  |
+| Windows        | Unknown    | Not planned as of now            |
 
 #### Browser support
 
