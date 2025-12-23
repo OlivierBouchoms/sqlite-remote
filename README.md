@@ -15,7 +15,9 @@ No software installation is required on the remote host - only the `sqlite3` bin
 
 ## Platform support
 
-### Client
+### Local machine
+
+The local machine runs the SQLite Remote API and frontend client application.
 
 #### OS
 
@@ -24,7 +26,7 @@ No software installation is required on the remote host - only the `sqlite3` bin
 | macOS          | Supported  |                                 |
 | Linux (Ubuntu) | Unknown    | Expected to work, needs testing |
 | Linux (other)  | Unknown    | Expected to work, needs testing |
-| Windows        | Won't work | Not planned as of now           |
+| Windows        | Unknown    | Not planned as of now           |
 
 #### Browser support
 
@@ -34,15 +36,18 @@ No software installation is required on the remote host - only the `sqlite3` bin
 | Firefox | Supported |
 | Safari  | Supported |
 
-### Server
+### Remote server
 
-| Platform             | Status     | Notes                                         |
-|----------------------|------------|-----------------------------------------------|
-| Linux (Ubuntu 22.04) | Verified   | Tested on Raspberry PI                        | 
-| Linux (Alpine 3.22)  | Verified   | Tested on [Docker Mock server](./mock-server) | 
-| Linux (other)        | Unknown    | Expected to work, needs testing               |
-| macOS                | Unknown    | Expected to work, needs testing               |
-| Windows              | Won't work | Not planned as of now                         |
+The remote server hosts the actual SQLite database file.
+
+| Platform             | Status     | Notes                           |
+|----------------------|------------|---------------------------------|
+| Linux (Alpine 3.22)  | Verified   | Tested using Docker Mock server | 
+| Linux (Ubuntu 22.04) | Verified   | Tested using Docker mock server | 
+| Linux (Ubuntu 24.04) | Verified   | Tested using Docker mock server | 
+| Linux (other)        | Unknown    | Expected to work, needs testing |
+| macOS                | Unknown    | Not planned as of now           |
+| Windows              | Unknown    | Not planned as of now           |
 
 ## Features
 
@@ -102,4 +107,4 @@ The following SSH config fields of a host entry are currently parsed and support
 
 * [Backend](./backend): .NET REST API which accesses the SQLite database over SSH
 * [Frontend](./frontend): React user interface
-* [Mock server](./mock-server): a Docker compse stack which contains a SQLite database and an SSH server, for local testing
+* [Mock server](./mock-server): a Docker compose stack which contains a SQLite database and an SSH server, for local testing
