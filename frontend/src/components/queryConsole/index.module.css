@@ -1,0 +1,18 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.editorWrapper {
+    flex-grow: 1;
+    min-width: 8em;
+    overflow-x: scroll;
+}
+
+.editor {
+    font-size: var(--font-size-2);
+    height: 100%;
+    width: 100%;
+}

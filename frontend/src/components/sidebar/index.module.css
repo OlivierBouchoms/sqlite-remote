@@ -1,12 +1,9 @@
 .sidebar {
     display: flex;
     flex-direction: row-reverse;
-    min-width: fit-content;
+    min-width: var(--sidebar-initial-width);
+    width: var(--sidebar-initial-width);
     border-left: 1px solid var(--gray-7);
-
-    max-width: -webkit-fill-available;
-    max-width: -moz-available;
-    max-width: stretch;
 
     touch-action: none;
 }

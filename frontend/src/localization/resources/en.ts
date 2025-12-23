@@ -138,6 +138,10 @@ export const en = {
             },
             queryConsole: {
                 label: 'Query console',
+                toolbar: {
+                    execute: 'Execute',
+                    copy: 'Copy',
+                },
             },
         },
     },
