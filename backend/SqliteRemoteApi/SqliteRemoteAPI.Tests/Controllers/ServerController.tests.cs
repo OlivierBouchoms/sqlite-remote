@@ -37,7 +37,7 @@ public partial class ServerControllerTests(ITestOutputHelper output)
 
         Assert.Equal(requestDto.DbPath, responseData.DbPath);
     }
-    
+
     [Fact]
     public async Task GET_Server_Connect_ShouldReturn500_SshHostNotFound_WhenInvalidHost()
     {
@@ -52,11 +52,11 @@ public partial class ServerControllerTests(ITestOutputHelper output)
 
         var response = await client.GetAsync(queryString);
         var responseData = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-        
+
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         Assert.Equal(nameof(DatabaseOperationError.SshHostNotFound), responseData.Detail);
     }
-    
+
     [ClassData(typeof(MockServerClassData))]
     [Theory]
     public async Task GET_Server_Connect_ShouldReturn500_DatabaseNotFound_WhenInvalidPath(string host)
@@ -73,9 +73,104 @@ public partial class ServerControllerTests(ITestOutputHelper output)
         var response = await client.GetAsync(queryString);
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-        
+
         var responseData = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-        
+
         Assert.Equal(nameof(DatabaseOperationError.DatabaseNotFound), responseData.Detail);
+    }
+
+    [ClassData(typeof(MockServerClassData))]
+    [Theory]
+    public async Task POST_Server_Query_ShouldReturn200_WhenValidSelectQueryWithResults(string host)
+    {
+        var client = _factory.CreateClient();
+        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path,
+            "SELECT CategoryID, CategoryName, Description FROM Categories ORDER BY CategoryID LIMIT 3");
+
+        var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
+
+        response.EnsureSuccessStatusCode();
+
+        var responseData = await response.Content.ReadFromJsonAsync<ServerQueryResponseDto>();
+
+        Assert.NotNull(responseData);
+        Assert.Single(responseData.ResultSets);
+        Assert.NotEmpty(responseData.ResultSets.First());
+    }
+
+    [ClassData(typeof(MockServerClassData))]
+    [Theory]
+    public async Task POST_Server_Query_ShouldReturn200_WhenValidSelectQueryWithNoResults(string host)
+    {
+        var client = _factory.CreateClient();
+        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path, "SELECT CategoryID FROM Categories WHERE 1 != 1");
+
+        var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
+
+        response.EnsureSuccessStatusCode();
+
+        var responseData = await response.Content.ReadFromJsonAsync<ServerQueryResponseDto>();
+
+        Assert.NotNull(responseData);
+        Assert.Single(responseData.ResultSets);
+        Assert.Empty(responseData.ResultSets.First());
+    }
+
+    [ClassData(typeof(MockServerClassData))]
+    [Theory]
+    public async Task POST_Server_Query_ShouldReturn200_WhenValidSelectQueriesWithResults(string host)
+    {
+        var client = _factory.CreateClient();
+        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path, "SELECT 1; SELECT 2; SELECT 3");
+
+        var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
+
+        response.EnsureSuccessStatusCode();
+
+        var responseData = await response.Content.ReadFromJsonAsync<ServerQueryResponseDto>();
+
+        Assert.NotNull(responseData);
+        Assert.NotEmpty(responseData.ResultSets);
+        Assert.Equal(3, responseData.ResultSets.Count);
+        
+        Assert.All(responseData.ResultSets, rs => Assert.Single(rs));
+    }
+
+    [ClassData(typeof(MockServerClassData))]
+    [Theory]
+    public async Task POST_Server_Query_ShouldReturn200_WhenValidUpdateQueryWithNoModifiedRows(string host)
+    {
+        var client = _factory.CreateClient();
+        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path, "UPDATE Categories SET Description = 'update' WHERE 1 != 1");
+
+        var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
+
+        response.EnsureSuccessStatusCode();
+
+        var responseData = await response.Content.ReadFromJsonAsync<ServerQueryResponseDto>();
+
+        Assert.NotNull(responseData);
+        Assert.NotEmpty(responseData.ResultSets);
+        Assert.Single(responseData.ResultSets);
+        Assert.Empty(responseData.ResultSets.First());
+    }
+    
+    [ClassData(typeof(MockServerClassData))]
+    [Theory]
+    public async Task POST_Server_Query_ShouldReturn200_WhenValidDeleteQueryWithNoModifiedRows(string host)
+    {
+        var client = _factory.CreateClient();
+        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path, "DELETE FROM Categories WHERE 1 != 1");
+
+        var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
+
+        response.EnsureSuccessStatusCode();
+
+        var responseData = await response.Content.ReadFromJsonAsync<ServerQueryResponseDto>();
+
+        Assert.NotNull(responseData);
+        Assert.NotEmpty(responseData.ResultSets);
+        Assert.Single(responseData.ResultSets);
+        Assert.Empty(responseData.ResultSets.First());
     }
 }
