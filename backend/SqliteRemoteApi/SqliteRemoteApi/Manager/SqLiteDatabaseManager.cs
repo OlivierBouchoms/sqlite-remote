@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Renci.SshNet;
@@ -54,6 +55,43 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, IPathTransf
         {
             logger.LogWarning(e, "Check if sqlite3 binary exists on {SshHost} failed", input.HostName);
             return new(false, connectionResult.SshHost, connectionResult.DbPath, DatabaseOperationError.RemoteCommandFailed);
+        }
+        finally
+        {
+            connectionResult.Client!.Dispose();
+        }
+    }
+
+    public async Task<DatabaseQueryResult> Query(DatabaseQueryInput input)
+    {
+        var connectionResult = await Connect(input.HostName, input.DbPath);
+
+        if (!connectionResult.Success)
+            return new DatabaseQueryResult([], false, connectionResult.SshHost, connectionResult.DbPath, connectionResult.Error);
+
+        try
+        {
+            var cts = new CancellationTokenSource(DataCommandTimeout);
+
+            var command = connectionResult.Client!.CreateCommand($"sqlite3 -json {connectionResult.DbPath} \"{input.CommandText}\"");
+
+            await command.ExecuteAsync(cts.Token);
+
+            var success = command.ExitStatus == 0;
+            var resultSets = await ParseSqliteCommandOutput(command);
+
+            return new(resultSets, success, connectionResult.SshHost, connectionResult.DbPath,
+                success ? null : DatabaseOperationError.DatabaseCommandFailed);
+        }
+        catch (OperationCanceledException e)
+        {
+            logger.LogWarning(e, "Executing command for {DbPath} ({AbsolutePath}) on {SshHost} timed out. Command text:\n{CommandText}", input.DbPath, connectionResult.DbPath, input.HostName, input.CommandText);
+            return new([], false, connectionResult.SshHost, connectionResult.DbPath, DatabaseOperationError.DatabaseCommandTimeOut);
+        }
+        catch (Exception e)
+        {
+            logger.LogWarning(e, "Executing command for {DbPath} ({AbsolutePath}) on {SshHost} failed. Command text:\n{CommandText}", input.DbPath, connectionResult.DbPath, input.HostName, input.CommandText);
+            return new([], false, connectionResult.SshHost, connectionResult.DbPath, DatabaseOperationError.DatabaseCommandFailed);
         }
         finally
         {
@@ -165,7 +203,7 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, IPathTransf
             foreach (var row in rawData)
             {
                 if (row == null) continue;
-                
+
                 items.Add(new TableSchemaColumn(
                     row["cid"]!.GetValue<int>(),
                     row["name"]!.GetValue<string>(),
@@ -243,9 +281,9 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, IPathTransf
         try
         {
             var pathTransformCts = new CancellationTokenSource(CommandTimeout);
-            
+
             absolutePath = await pathTransformer.Transform(dbPath, client, pathTransformCts.Token);
-            
+
             var fileExistsCommand = client.CreateCommand(string.Format("test -f '{0}'", absolutePath));
 
             var fileExistsCts = new CancellationTokenSource(CommandTimeout);
@@ -268,5 +306,39 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, IPathTransf
             client.Dispose();
             return new DatabaseServerConnectResult(null, null, false, sshHost, DatabaseOperationError.RemoteCommandFailed);
         }
+    }
+
+    /// <summary>
+    /// Parses result data for an SshCommand that executed one or multiple queries
+    /// </summary>
+    async Task<ICollection<JsonArray>> ParseSqliteCommandOutput(SshCommand command)
+    {
+        var data = new List<JsonArray>();
+        
+        if (command.ExitStatus != 0) return [];
+        
+        if (command.OutputStream.CanSeek)
+            command.OutputStream.Position = 0;
+                
+        var jsonStringBuilder = new StringBuilder();
+            
+        using var reader = new StreamReader(command.OutputStream, leaveOpen: true);
+        while (!reader.EndOfStream)
+        {
+            var line = await reader.ReadLineAsync();
+
+            jsonStringBuilder.Append(line);
+                    
+            if (!string.IsNullOrEmpty(line) && line.EndsWith(']')) // end of the JSON array
+            {
+                data.Add(JsonNode.Parse(jsonStringBuilder.ToString())?.AsArray() ?? []);
+
+                jsonStringBuilder.Clear();
+            }
+        }
+
+        if (data.Count == 0) data.Add([]);
+
+        return data;
     }
 }
