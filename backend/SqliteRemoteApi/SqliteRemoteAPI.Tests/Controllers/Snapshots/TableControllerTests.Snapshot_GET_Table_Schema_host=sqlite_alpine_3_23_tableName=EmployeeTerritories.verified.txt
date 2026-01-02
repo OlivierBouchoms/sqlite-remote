@@ -1,0 +1,17 @@
+﻿{
+  Columns: [
+    {
+      Name: EmployeeID,
+      Type: INTEGER,
+      Required: true,
+      PrimaryKey: true
+    },
+    {
+      ColumnId: 1,
+      Name: TerritoryID,
+      Type: TEXT,
+      Required: true,
+      PrimaryKey: false
+    }
+  ]
+}

@@ -11,6 +11,8 @@ Host sqlite_ubuntu_22_04
     Port 4122
     IdentityFile ~/.ssh/id_sqlite_remote
     StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
+    IdentitiesOnly=yes
 ```
 
 ## App database configuration
