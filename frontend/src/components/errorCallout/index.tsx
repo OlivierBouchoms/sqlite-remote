@@ -15,6 +15,13 @@ export const ErrorCallout = ({ error }: ErrorCalloutProps) => {
         if ('body' in error) {
             const details = error.body as DatabaseErrorResponseDto;
 
+            if (details.detailContext) {
+                return {
+                    title: t(`domain.api.databaseOperationError.${details.detail!}`),
+                    description: details.detailContext,
+                };
+            }
+
             return {
                 title: t('components.errorCallout.problemDetails.title', { title: details.title, status: details.status }),
                 description: t(`domain.api.databaseOperationError.${details.detail!}`),
