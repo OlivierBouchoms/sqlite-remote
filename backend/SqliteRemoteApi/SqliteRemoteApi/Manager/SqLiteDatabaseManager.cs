@@ -73,7 +73,9 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, IPathTransf
         {
             var cts = new CancellationTokenSource(DataCommandTimeout);
 
-            var command = connectionResult.Client!.CreateCommand($"sqlite3 -json {connectionResult.DbPath} \"{input.CommandText}\"");
+            var commandText = SanitizeCommandText(input.CommandText);
+
+            var command = connectionResult.Client!.CreateCommand($"sqlite3 -json {connectionResult.DbPath} \"{commandText}\"");
 
             await command.ExecuteAsync(cts.Token);
 
@@ -356,5 +358,13 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, IPathTransf
         }
 
         return error.TrimEnd();
+    }
+    
+    string SanitizeCommandText(string commandText)
+    {
+        return commandText
+            .ReplaceLineEndings(" ")
+            .Replace("\"", "\\\"")
+            .Trim();
     }
 }

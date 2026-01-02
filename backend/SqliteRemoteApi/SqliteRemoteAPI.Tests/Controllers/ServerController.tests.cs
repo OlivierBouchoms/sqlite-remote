@@ -99,6 +99,51 @@ public partial class ServerControllerTests(ITestOutputHelper output)
         Assert.Single(responseData.ResultSets);
         Assert.NotEmpty(responseData.ResultSets.First());
     }
+    
+    [ClassData(typeof(MockServerClassData))]
+    [Theory]
+    public async Task POST_Server_Query_ShouldReturn200_WhenValidMultiLineSelectQueryWithResults(string host)
+    {
+        var client = _factory.CreateClient();
+        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path,
+            @"
+SELECT
+    c.CustomerID,
+    c.CompanyName,
+    (
+        SELECT COUNT(*)
+        FROM Orders o
+        WHERE o.CustomerID = c.CustomerID
+          AND EXISTS (
+              SELECT 1
+              FROM ""Order Details"" od
+              WHERE od.OrderID = o.OrderID
+                AND od.UnitPrice > (
+                    SELECT AVG(UnitPrice)
+                    FROM ""Order Details""
+                )
+          )
+    ) AS ExpensiveOrderCount
+FROM Customers c
+WHERE c.CompanyName LIKE '%a%'
+ORDER BY (
+    SELECT SUM(od.Quantity * od.UnitPrice)
+    FROM Orders o2
+    JOIN ""Order Details"" od ON od.OrderID = o2.OrderID
+    WHERE o2.CustomerID = c.CustomerID
+);
+");
+
+        var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
+
+        response.EnsureSuccessStatusCode();
+
+        var responseData = await response.Content.ReadFromJsonAsync<ServerQueryResponseDto>();
+
+        Assert.NotNull(responseData);
+        Assert.Single(responseData.ResultSets);
+        Assert.NotEmpty(responseData.ResultSets.First());
+    }
 
     [ClassData(typeof(MockServerClassData))]
     [Theory]
