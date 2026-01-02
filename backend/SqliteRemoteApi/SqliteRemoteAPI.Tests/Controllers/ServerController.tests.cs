@@ -177,4 +177,32 @@ public partial class ServerControllerTests(ITestOutputHelper output)
         Assert.Single(responseData.ResultSets);
         Assert.Equal(0, responseData.ResultSets.First().Count);
     }
+    
+    
+    [Fact]
+    public async Task POST_Server_Query_ShouldReturn500_SshHostNotFound_WhenInvalidHost()
+    {
+        var client = _factory.CreateClient();
+        var requestDto = new ServerQueryRequestDto("unknown", MockDatabase.Path, "DELETE FROM Categories WHERE 1 != 1");
+
+        var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
+        var responseData = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        Assert.Equal(nameof(DatabaseOperationError.SshHostNotFound), responseData.Detail);
+    }
+
+    [ClassData(typeof(MockServerClassData))]
+    [Theory]
+    public async Task POST_Server_Query_ShouldReturn500_DatabaseNotFound_WhenInvalidPath(string host)
+    {
+        var client = _factory.CreateClient();
+        var requestDto = new ServerQueryRequestDto(host, "/db/unknown.db", "DELETE FROM Categories WHERE 1 != 1");
+
+        var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
+        var responseData = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        Assert.Equal(nameof(DatabaseOperationError.DatabaseNotFound), responseData.Detail);
+    }
 }
