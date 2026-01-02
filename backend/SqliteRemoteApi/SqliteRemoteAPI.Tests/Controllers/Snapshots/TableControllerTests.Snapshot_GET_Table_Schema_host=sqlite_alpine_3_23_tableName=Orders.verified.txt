@@ -1,0 +1,100 @@
+﻿{
+  Columns: [
+    {
+      Name: OrderID,
+      Type: INTEGER,
+      Required: true,
+      PrimaryKey: true
+    },
+    {
+      ColumnId: 1,
+      Name: CustomerID,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 2,
+      Name: EmployeeID,
+      Type: INTEGER,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 3,
+      Name: OrderDate,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 4,
+      Name: RequiredDate,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 5,
+      Name: ShippedDate,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 6,
+      Name: ShipVia,
+      Type: INTEGER,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 7,
+      Name: Freight,
+      Required: false,
+      DefaultValue: {
+        ValueKind: String
+      },
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 8,
+      Name: ShipName,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 9,
+      Name: ShipAddress,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 10,
+      Name: ShipCity,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 11,
+      Name: ShipRegion,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 12,
+      Name: ShipPostalCode,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 13,
+      Name: ShipCountry,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    }
+  ]
+}

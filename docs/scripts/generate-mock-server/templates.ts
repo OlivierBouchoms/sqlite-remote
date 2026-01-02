@@ -8,6 +8,13 @@ export const templates: Templates = {
         version_snake_case: '3_22',
         port: 4022,
     },
+    'alpine-3_23': {
+        os: 'Alpine Linux',
+        os_snake_case: 'alpine',
+        version: '3.23',
+        version_snake_case: '3_23',
+        port: 4023,
+    },
     'ubuntu-22_04': {
         os: 'Ubuntu',
         os_snake_case: 'ubuntu',

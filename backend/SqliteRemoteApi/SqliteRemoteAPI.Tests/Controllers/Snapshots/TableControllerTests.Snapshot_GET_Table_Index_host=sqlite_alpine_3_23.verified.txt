@@ -1,0 +1,46 @@
+﻿{
+  Tables: [
+    {
+      Name: Categories
+    },
+    {
+      Name: CustomerCustomerDemo
+    },
+    {
+      Name: CustomerDemographics
+    },
+    {
+      Name: Customers
+    },
+    {
+      Name: EmployeeTerritories
+    },
+    {
+      Name: Employees
+    },
+    {
+      Name: Order Details
+    },
+    {
+      Name: Orders
+    },
+    {
+      Name: Products
+    },
+    {
+      Name: Regions
+    },
+    {
+      Name: Shippers
+    },
+    {
+      Name: Suppliers
+    },
+    {
+      Name: Territories
+    },
+    {
+      Name: sqlite_sequence
+    }
+  ]
+}
