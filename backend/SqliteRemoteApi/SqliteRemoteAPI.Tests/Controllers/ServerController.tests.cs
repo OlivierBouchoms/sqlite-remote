@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc;
@@ -100,6 +101,7 @@ public partial class ServerControllerTests(ITestOutputHelper output)
 
     [ClassData(typeof(MockServerClassData))]
     [Theory]
+    [SuppressMessage("Assertions", "xUnit2013:Do not use equality check to check for collection size.")] // need to check Count property, as Assert.Empty evaluates to false on JsonArray
     public async Task POST_Server_Query_ShouldReturn200_WhenValidSelectQueryWithNoResults(string host)
     {
         var client = _factory.CreateClient();
@@ -113,7 +115,7 @@ public partial class ServerControllerTests(ITestOutputHelper output)
 
         Assert.NotNull(responseData);
         Assert.Single(responseData.ResultSets);
-        Assert.Empty(responseData.ResultSets.First());
+        Assert.Equal(0, responseData.ResultSets.First().Count);
     }
 
     [ClassData(typeof(MockServerClassData))]
@@ -138,6 +140,7 @@ public partial class ServerControllerTests(ITestOutputHelper output)
 
     [ClassData(typeof(MockServerClassData))]
     [Theory]
+    [SuppressMessage("Assertions", "xUnit2013:Do not use equality check to check for collection size.")] // need to check Count property, as Assert.Empty evaluates to false on JsonArray
     public async Task POST_Server_Query_ShouldReturn200_WhenValidUpdateQueryWithNoModifiedRows(string host)
     {
         var client = _factory.CreateClient();
@@ -152,11 +155,12 @@ public partial class ServerControllerTests(ITestOutputHelper output)
         Assert.NotNull(responseData);
         Assert.NotEmpty(responseData.ResultSets);
         Assert.Single(responseData.ResultSets);
-        Assert.Empty(responseData.ResultSets.First());
+        Assert.Equal(0, responseData.ResultSets.First().Count);
     }
     
     [ClassData(typeof(MockServerClassData))]
     [Theory]
+    [SuppressMessage("Assertions", "xUnit2013:Do not use equality check to check for collection size.")] // need to check Count property, as Assert.Empty evaluates to false on JsonArray
     public async Task POST_Server_Query_ShouldReturn200_WhenValidDeleteQueryWithNoModifiedRows(string host)
     {
         var client = _factory.CreateClient();
@@ -171,6 +175,6 @@ public partial class ServerControllerTests(ITestOutputHelper output)
         Assert.NotNull(responseData);
         Assert.NotEmpty(responseData.ResultSets);
         Assert.Single(responseData.ResultSets);
-        Assert.Empty(responseData.ResultSets.First());
+        Assert.Equal(0, responseData.ResultSets.First().Count);
     }
 }
