@@ -130,3 +130,17 @@ _Picture column has been omitted from result as it is a blob_
 ]
 
 ```
+
+## Error data format
+
+Errors are returned in plain text, no matter the type of error (invalid column/table or SQL syntax error).
+
+Command: `sqlite3 -json sandbox.db "SEL__ECT 1"`
+
+Result:
+
+```
+Error: in prepare, near "SEL__ECT": syntax error
+  SEL__ECT 1
+  ^--- error here
+```
