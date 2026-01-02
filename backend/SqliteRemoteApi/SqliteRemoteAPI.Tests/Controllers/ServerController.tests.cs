@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.WebUtilities;
 using SqliteRemoteApi.Dto;
+using SqliteRemoteApi.Dto.Error;
 using SqliteRemoteApi.Models.Base;
 using SqliteRemoteAPI.Tests.Config.Constants;
 using SqliteRemoteAPI.Tests.Config.Data;
@@ -178,6 +179,50 @@ public partial class ServerControllerTests(ITestOutputHelper output)
         Assert.Equal(0, responseData.ResultSets.First().Count);
     }
     
+    [ClassData(typeof(MockServerClassData))]
+    [Theory]
+    public async Task POST_Server_Query_ShouldReturn500_DatabaseCommandFailed_WhenInvalidTable(string host)
+    {
+        var client = _factory.CreateClient();
+        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path, "SELECT * FROM __unknown_table__");
+
+        var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
+        var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
+
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        Assert.Equal(DatabaseOperationError.DatabaseCommandFailed, responseData.Detail);
+        Assert.StartsWith("Error: in prepare, no such table: __unknown_table__", responseData.DetailContext);
+    }
+
+    [ClassData(typeof(MockServerClassData))]
+    [Theory]
+    public async Task POST_Server_Query_ShouldReturn500_DatabaseCommandFailed_WhenInvalidColumn(string host)
+    {
+        var client = _factory.CreateClient();
+        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path, "SELECT __unknown_column__ FROM Categories");
+
+        var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
+        var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
+
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        Assert.Equal(DatabaseOperationError.DatabaseCommandFailed, responseData.Detail);
+        Assert.StartsWith("Error: in prepare, no such column: __unknown_column__", responseData.DetailContext);
+    }
+    
+    [ClassData(typeof(MockServerClassData))]
+    [Theory]
+    public async Task POST_Server_Query_ShouldReturn500_DatabaseCommandFailed_WhenInvalidSyntax(string host)
+    {
+        var client = _factory.CreateClient();
+        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path, "SEL__ECT CategoryId FROM Categories");
+
+        var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
+        var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
+
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        Assert.Equal(DatabaseOperationError.DatabaseCommandFailed, responseData.Detail);
+        Assert.StartsWith("Error: in prepare, near \"SEL__ECT\": syntax error", responseData.DetailContext);
+    }
     
     [Fact]
     public async Task POST_Server_Query_ShouldReturn500_SshHostNotFound_WhenInvalidHost()

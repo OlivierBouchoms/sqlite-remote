@@ -80,8 +80,10 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, IPathTransf
             var success = command.ExitStatus == 0;
             var resultSets = await ParseSqliteCommandOutput(command);
 
+            var errorContext = ParseSqliteCommandError(command);
+
             return new(resultSets, success, connectionResult.SshHost, connectionResult.DbPath,
-                success ? null : DatabaseOperationError.DatabaseCommandFailed);
+                success ? null : DatabaseOperationError.DatabaseCommandFailed, errorContext);
         }
         catch (OperationCanceledException e)
         {
@@ -314,21 +316,21 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, IPathTransf
     async Task<ICollection<JsonArray>> ParseSqliteCommandOutput(SshCommand command)
     {
         var data = new List<JsonArray>();
-        
+
         if (command.ExitStatus != 0) return [];
-        
+
         if (command.OutputStream.CanSeek)
             command.OutputStream.Position = 0;
-                
+
         var jsonStringBuilder = new StringBuilder();
-            
+
         using var reader = new StreamReader(command.OutputStream, leaveOpen: true);
         while (!reader.EndOfStream)
         {
             var line = await reader.ReadLineAsync();
 
             jsonStringBuilder.Append(line);
-                    
+
             if (!string.IsNullOrEmpty(line) && line.EndsWith(']')) // end of the JSON array
             {
                 data.Add(JsonNode.Parse(jsonStringBuilder.ToString())?.AsArray() ?? []);
@@ -340,5 +342,19 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, IPathTransf
         if (data.Count == 0) data.Add([]);
 
         return data;
+    }
+
+    string ParseSqliteCommandError(SshCommand command)
+    {
+        if (command.ExitStatus == 0) return "";
+        
+        var error = command.Error.Trim();
+
+        if (error.EndsWith("^--- error here"))
+        {
+            error = error.Remove(error.LastIndexOf("^--- error here", StringComparison.Ordinal), "^--- error here".Length);
+        }
+
+        return error.TrimEnd();
     }
 }

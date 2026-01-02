@@ -37,6 +37,8 @@ public class ServerController(IDatabaseManager databaseManager) : Controller
             return Ok(new ServerQueryResponseDto(result.ResultSets));
         }
 
+        HttpContext.Items[nameof(DatabaseErrorResponseDto.DetailContext)] = result.ErrorContext;
+
         return Problem(result.Error?.ToString());
     }
 }
