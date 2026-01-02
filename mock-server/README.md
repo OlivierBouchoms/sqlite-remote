@@ -4,11 +4,12 @@ These Docker containers contain an SSH agent and SQLite3 database. It allows for
 
 ## Containers
 
-| OS           | Version | SSH Port | README                                             |
-|--------------|---------|----------|----------------------------------------------------|
-| Alpine Linux | 3.22    | 4022     | [alpine-3_22/README.md](./alpine-3_22/README.md)   |
-| Ubuntu       | 22.04   | 4122     | [ubuntu-22_04/README.md](./ubuntu-22_04/README.md) |
-| Ubuntu       | 24.04   | 4124     | [ubuntu-24_04/README.md](./ubuntu-24_04/README.md) |
+| OS           | Version | SQLite version | SSH Port | README                                             |
+|--------------|---------|----------------|----------|----------------------------------------------------|
+| Alpine Linux | 3.22    | 3.49.2         | 4022     | [alpine-3_22/README.md](./alpine-3_22/README.md)   |
+| Alpine Linux | 3.23    | 3.51.1         | 4023     | [alpine-3_23/README.md](./alpine-3_23/README.md)   |
+| Ubuntu       | 22.04   | 3.37.2         | 4122     | [ubuntu-22_04/README.md](./ubuntu-22_04/README.md) |
+| Ubuntu       | 24.04   | 3.45.1         | 4124     | [ubuntu-24_04/README.md](./ubuntu-24_04/README.md) |
 
 ## Getting started
 
@@ -46,6 +47,7 @@ docker buildx inspect --bootstrap
 ### Build and push
 
 ```shell
+docker buildx use sqlite-remote-ci
 docker buildx bake --push
 ```
 
