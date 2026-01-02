@@ -11,6 +11,8 @@ Host sqlite_ubuntu_24_04
     Port 4124
     IdentityFile ~/.ssh/id_sqlite_remote
     StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
+    IdentitiesOnly=yes
 ```
 
 ## App database configuration

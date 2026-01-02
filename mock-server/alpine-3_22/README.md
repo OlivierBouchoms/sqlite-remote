@@ -11,6 +11,8 @@ Host sqlite_alpine_3_22
     Port 4022
     IdentityFile ~/.ssh/id_sqlite_remote
     StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
+    IdentitiesOnly=yes
 ```
 
 ## App database configuration
