@@ -6,6 +6,7 @@ export type DatabaseErrorResponseDto = {
     status: number;
     detail: DatabaseOperationError;
     instance: string;
+    detailContext?: string | null;
 };
 
 export type DatabaseOperationError = 'SshConfigInvalid' | 'SshHostNotFound' | 'ConnectFailed' | 'ConnectTimeOut' | 'DatabaseNotFound' | 'DatabaseCommandFailed' | 'DatabaseCommandTimeOut' | 'RemoteCommandFailed' | 'RemoteCommandTimeOut';
@@ -20,6 +21,18 @@ export type DatabaseOperationSshHostDto = {
 export type ServerConnectResponseDto = {
     sshHost: DatabaseOperationSshHostDto;
     dbPath: string;
+};
+
+export type ServerQueryRequestDto = {
+    sshHost?: string | null;
+    dbPath?: string | null;
+    commandText?: string | null;
+};
+
+export type ServerQueryResponseDto = {
+    resultSets: Array<Array<{
+        [key: string]: unknown;
+    }>>;
 };
 
 export type TableDataResponseDto = {
@@ -58,6 +71,12 @@ export type GetApiServerConnectionData = {
 
 export type GetApiServerConnectionResponse = ServerConnectResponseDto;
 
+export type PostApiServerQueryData = {
+    requestBody?: ServerQueryRequestDto;
+};
+
+export type PostApiServerQueryResponse = ServerQueryResponseDto;
+
 export type GetApiTableData = {
     dbPath?: string;
     sshHost?: string;
@@ -90,6 +109,21 @@ export type $OpenApiTs = {
                  * OK
                  */
                 200: ServerConnectResponseDto;
+                /**
+                 * Internal Server Error
+                 */
+                500: DatabaseErrorResponseDto;
+            };
+        };
+    };
+    '/api/server/query': {
+        post: {
+            req: PostApiServerQueryData;
+            res: {
+                /**
+                 * OK
+                 */
+                200: ServerQueryResponseDto;
                 /**
                  * Internal Server Error
                  */

@@ -1,7 +1,8 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
+import { UseMutationOptions, UseQueryOptions, useMutation, useQuery } from "@tanstack/react-query";
 import { ServerService, TableService } from "../requests/services.gen";
+import { ServerQueryRequestDto } from "../requests/types.gen";
 import * as Common from "./common";
 export const useServerServiceGetApiServerConnection = <TData = Common.ServerServiceGetApiServerConnectionDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ dbPath, sshHost }: {
   dbPath?: string;
@@ -21,3 +22,8 @@ export const useTableServiceGetApiTableByNameSchema = <TData = Common.TableServi
   name: string;
   sshHost?: string;
 }, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseTableServiceGetApiTableByNameSchemaKeyFn({ dbPath, name, sshHost }, queryKey), queryFn: () => TableService.getApiTableByNameSchema({ dbPath, name, sshHost }) as TData, ...options });
+export const useServerServicePostApiServerQuery = <TData = Common.ServerServicePostApiServerQueryMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  requestBody?: ServerQueryRequestDto;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  requestBody?: ServerQueryRequestDto;
+}, TContext>({ mutationFn: ({ requestBody }) => ServerService.postApiServerQuery({ requestBody }) as unknown as Promise<TData>, ...options });
