@@ -47,6 +47,7 @@ docker buildx inspect --bootstrap
 ### Build and push
 
 ```shell
+docker buildx use sqlite-remote-ci
 docker buildx bake --push
 ```
 
