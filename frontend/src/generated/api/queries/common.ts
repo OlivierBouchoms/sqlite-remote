@@ -32,3 +32,4 @@ export const UseTableServiceGetApiTableByNameSchemaKeyFn = ({ dbPath, name, sshH
   name: string;
   sshHost?: string;
 }, queryKey?: Array<unknown>) => [useTableServiceGetApiTableByNameSchemaKey, ...(queryKey ?? [{ dbPath, name, sshHost }])];
+export type ServerServicePostApiServerQueryMutationResult = Awaited<ReturnType<typeof ServerService.postApiServerQuery>>;

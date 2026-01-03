@@ -4,7 +4,13 @@ export class DatabaseConfigurationRepository {
     public read(id: string): DatabaseConfiguration | null {
         const data = localStorage.getItem(this.getKey(id));
 
-        return data ? (JSON.parse(data) as DatabaseConfiguration) : null;
+        const parsed = data ? (JSON.parse(data) as DatabaseConfiguration) : null;
+
+        if (parsed) {
+            parsed.queryConsole = parsed.queryConsole || { commandText: '' };
+        }
+
+        return parsed;
     }
 
     public getAll(): DatabaseConfiguration[] {
@@ -26,6 +32,10 @@ export class DatabaseConfigurationRepository {
     }
 
     public add(config: DatabaseConfiguration) {
+        localStorage.setItem(this.getKey(config.id), JSON.stringify(config));
+    }
+
+    public update(config: DatabaseConfiguration) {
         localStorage.setItem(this.getKey(config.id), JSON.stringify(config));
     }
 

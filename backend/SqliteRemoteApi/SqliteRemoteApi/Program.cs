@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
+using SqliteRemoteApi.Dto.Error;
 using SqliteRemoteApi.Manager;
 using SqliteRemoteApi.Parser;
 using SqliteRemoteApi.Paths;
@@ -32,6 +33,13 @@ builder.Services.AddSingleton<IDatabaseManager, SqLiteDatabaseManager>();
 builder.Services.AddSingleton<IPathTransformer, RemotePathTransformer>();
 builder.Services.AddSingleton<ISshConfigParser, SshConfigParser>();
 
+builder.Services.AddProblemDetails(options =>
+{
+    options.CustomizeProblemDetails = context =>
+    {
+        context.ProblemDetails.Extensions.TryAdd("detailContext", context.HttpContext.Items[nameof(DatabaseErrorResponseDto.DetailContext)]);
+    };
+});
 var app = builder.Build();
 
 app.UseSwagger();

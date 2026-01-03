@@ -6,6 +6,8 @@ public interface IDatabaseManager
 {
     Task<DatabaseConnectResult> Connect(DatabaseConnectInput input);
 
+    Task<DatabaseQueryResult> Query(DatabaseQueryInput input);
+
     Task<ListTablesResult> ListTables(ListTablesInput input);
 
     Task<GetTableDataResult> GetTableData(GetTableDataInput input);

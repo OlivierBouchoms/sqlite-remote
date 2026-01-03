@@ -11,16 +11,21 @@ import interact from 'interactjs';
 import { useAppLayout } from '../../context/appLayoutContext.tsx';
 import { nameof } from '../../utils/nameof.ts';
 import { DatabaseOverviewRouteParams } from '../../pages/databaseOverview';
+import { clamp } from '../../domain/math/math.ts';
+import { getRootCssVariable } from '../../domain/style/helpers.ts';
+
+type UpdateWidthParams = {
+    targetWidth: number;
+    sidebarExpanded: boolean;
+};
 
 export default function Sidebar() {
     const { registerChildElement, getMaxSidebarWidth } = useAppLayout();
 
     const rootElement = useRef<HTMLDivElement>();
 
-    const rootElementInitialWidth = useRef<number>();
-    const rootElementTargetWidth = useRef<number>();
-
-    const isExpanded = useRef<boolean>(false);
+    const rootElementTargetWidth = useRef<number>(parseInt(getRootCssVariable('--sidebar-initial-width')));
+    const rootElementMinWidth = useRef<number>(parseInt(getRootCssVariable('--sidebar-min-width')));
 
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -52,26 +57,27 @@ export default function Sidebar() {
         [setSearchParams]
     );
 
-    const updateWidth = useCallback(() => {
-        if (!rootElement.current || !rootElementInitialWidth.current || !rootElementTargetWidth.current) return;
+    const updateWidth = useCallback(
+        ({ targetWidth, sidebarExpanded }: UpdateWidthParams) => {
+            if (!rootElement.current) return;
 
-        const calculatedWidth = Math.max(rootElementInitialWidth.current, rootElementTargetWidth.current);
-        const maxWidth = getMaxSidebarWidth();
+            const maxWidth = getMaxSidebarWidth();
+            const width = maxWidth !== null ? clamp(targetWidth, rootElementMinWidth.current, maxWidth) : Math.max(rootElementMinWidth.current, targetWidth);
 
-        const widthStyleValue = maxWidth !== null ? `${Math.min(calculatedWidth, maxWidth)}px` : `${calculatedWidth}px`;
+            const widthStyleValue = `${width}px`;
 
-        rootElement.current.style.minWidth = isExpanded.current ? widthStyleValue : 'min-content';
-        rootElement.current.style.width = isExpanded.current ? widthStyleValue : '';
-    }, [getMaxSidebarWidth]);
+            rootElement.current.style.minWidth = sidebarExpanded ? widthStyleValue : 'min-content';
+            rootElement.current.style.width = sidebarExpanded ? widthStyleValue : 'min-content';
+        },
+        [getMaxSidebarWidth]
+    );
 
     useEffect(() => {
-        if (!rootElement.current) return;
-
-        rootElementInitialWidth.current = rootElement.current.offsetWidth;
-        isExpanded.current = sidebarExpanded;
-
-        updateWidth();
-    }, [rootElement, menuItems, sidebarExpanded, updateWidth]);
+        updateWidth({
+            targetWidth: rootElementTargetWidth.current,
+            sidebarExpanded: sidebarExpanded,
+        });
+    }, [updateWidth, sidebarExpanded]);
 
     useEffect(() => {
         if (!rootElement.current || !sidebarExpanded) return; // sidebar can't be resized if it is collapsed
@@ -86,7 +92,10 @@ export default function Sidebar() {
 
                     rootElementTargetWidth.current = event.rect.width;
 
-                    updateWidth();
+                    updateWidth({
+                        targetWidth: event.rect.width,
+                        sidebarExpanded: true, // resizing is only possible when sidebar is expanded
+                    });
                 },
             },
             modifiers: [

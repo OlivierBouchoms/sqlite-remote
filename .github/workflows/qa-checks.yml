@@ -54,7 +54,7 @@ jobs:
         run: docker compose up -d
         working-directory: ./mock-server
       - name: Run tests
-        run: dotnet test --no-restore --no-build
+        run: dotnet test --no-restore --no-build --logger:"console;verbosity=detailed"
       - name: Stop mock servers
         run: docker compose down
         working-directory: ./mock-server

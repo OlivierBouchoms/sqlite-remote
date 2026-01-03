@@ -22,6 +22,10 @@ export const $DatabaseErrorResponseDto = {
         instance: {
             minLength: 1,
             type: 'string'
+        },
+        detailContext: {
+            type: 'string',
+            nullable: true
         }
     },
     additionalProperties: false
@@ -66,6 +70,42 @@ export const $ServerConnectResponseDto = {
         dbPath: {
             minLength: 1,
             type: 'string'
+        }
+    },
+    additionalProperties: false
+} as const;
+
+export const $ServerQueryRequestDto = {
+    type: 'object',
+    properties: {
+        sshHost: {
+            type: 'string',
+            nullable: true
+        },
+        dbPath: {
+            type: 'string',
+            nullable: true
+        },
+        commandText: {
+            type: 'string',
+            nullable: true
+        }
+    },
+    additionalProperties: false
+} as const;
+
+export const $ServerQueryResponseDto = {
+    required: ['resultSets'],
+    type: 'object',
+    properties: {
+        resultSets: {
+            type: 'array',
+            items: {
+                type: 'array',
+                items: {
+                    type: 'object'
+                }
+            }
         }
     },
     additionalProperties: false

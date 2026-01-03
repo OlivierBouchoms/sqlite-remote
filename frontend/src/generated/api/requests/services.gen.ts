@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { GetApiServerConnectionData, GetApiServerConnectionResponse, GetApiTableData, GetApiTableResponse, GetApiTableByNameDataData, GetApiTableByNameDataResponse, GetApiTableByNameSchemaData, GetApiTableByNameSchemaResponse } from './types.gen';
+import type { GetApiServerConnectionData, GetApiServerConnectionResponse, PostApiServerQueryData, PostApiServerQueryResponse, GetApiTableData, GetApiTableResponse, GetApiTableByNameDataData, GetApiTableByNameDataResponse, GetApiTableByNameSchemaData, GetApiTableByNameSchemaResponse } from './types.gen';
 
 export class ServerService {
     /**
@@ -21,6 +21,24 @@ export class ServerService {
                 SshHost: data.sshHost,
                 DbPath: data.dbPath
             },
+            errors: {
+                500: 'Internal Server Error'
+            }
+        });
+    }
+    
+    /**
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns ServerQueryResponseDto OK
+     * @throws ApiError
+     */
+    public static postApiServerQuery(data: PostApiServerQueryData = {}): CancelablePromise<PostApiServerQueryResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/server/query',
+            body: data.requestBody,
+            mediaType: 'application/json',
             errors: {
                 500: 'Internal Server Error'
             }

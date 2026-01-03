@@ -6,10 +6,15 @@ import styles from './index.module.css';
 import { useTranslation } from 'react-i18next';
 
 type TableProps = {
-    visible: boolean;
+    visible?: boolean;
     data: any[];
     columns: TableColumn[];
-    onRenderingChange: (rendering: boolean) => void;
+    onRenderingChange?: (rendering: boolean) => void;
+    theme?: TableThemeProps;
+};
+
+type TableThemeProps = {
+    borderRadius: '0' | 'var(--radius-2)';
 };
 
 export type TableCellData = string | number | boolean | null;
@@ -38,7 +43,11 @@ const TEXT_ALIGNMENT: Record<TableColumnDataType, 'left' | 'right'> = {
 
 type ColumnStyle = Pick<CSSProperties, 'width' | 'textAlign' | 'contentVisibility'>;
 
-export const Table = ({ data, columns, onRenderingChange, visible }: TableProps) => {
+const defaultTheme: TableThemeProps = {
+    borderRadius: 'var(--radius-2)',
+};
+
+export const Table = ({ data, columns, onRenderingChange, visible = true, theme = defaultTheme }: TableProps) => {
     const [columnStyles, setColumnStyles] = useState<Map<string, ColumnStyle>>(new Map());
 
     const { t } = useTranslation(undefined, { keyPrefix: 'components.table' });
@@ -121,13 +130,16 @@ export const Table = ({ data, columns, onRenderingChange, visible }: TableProps)
     }, [columnStyles, columns]);
 
     useEffect(() => {
-        onRenderingChange(isRendering);
+        onRenderingChange?.(isRendering);
     }, [isRendering, onRenderingChange]);
 
     if (isRendering) return null;
 
     return (
-        <div className={styles.table} style={{ gridTemplateColumns: `repeat(${columns.length}, 1fr)`, display: visible ? 'grid' : 'none' }}>
+        <div
+            className={styles.table}
+            style={{ borderRadius: theme?.borderRadius, gridTemplateColumns: `repeat(${columns.length}, 1fr)`, display: visible ? 'grid' : 'none' }}
+        >
             {columns.map((column, columnIndex) => (
                 <div
                     className={styles.headerCell}
