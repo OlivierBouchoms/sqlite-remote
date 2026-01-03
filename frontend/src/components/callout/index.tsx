@@ -3,18 +3,24 @@ import { FaInfoCircle } from 'react-icons/fa';
 import styles from './index.module.css';
 
 type CalloutProps = {
-    type: 'error';
+    type: 'info' | 'error';
     title: string;
-    description: string | null | undefined;
+    description?: string | null | undefined;
 };
 
 const COLORS: Record<CalloutProps['type'], RadixCallout.RootProps['color']> = {
     error: 'red',
+    info: 'blue',
+};
+
+const ROLES: Record<CalloutProps['type'], RadixCallout.RootProps['role']> = {
+    error: 'alert',
+    info: 'status',
 };
 
 export const Callout = ({ type, title, description }: CalloutProps) => {
     return (
-        <RadixCallout.Root color={COLORS[type]} role='alert'>
+        <RadixCallout.Root color={COLORS[type]} role={ROLES[type]}>
             <RadixCallout.Icon>
                 <FaInfoCircle />
             </RadixCallout.Icon>
