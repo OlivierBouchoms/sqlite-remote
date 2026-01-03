@@ -6,10 +6,10 @@ import styles from './index.module.css';
 import { useTranslation } from 'react-i18next';
 
 type TableProps = {
-    visible: boolean;
+    visible?: boolean;
     data: any[];
     columns: TableColumn[];
-    onRenderingChange: (rendering: boolean) => void;
+    onRenderingChange?: (rendering: boolean) => void;
     theme?: TableThemeProps;
 };
 
@@ -47,7 +47,7 @@ const defaultTheme: TableThemeProps = {
     borderRadius: 'var(--radius-2)',
 };
 
-export const Table = ({ data, columns, onRenderingChange, visible, theme = defaultTheme }: TableProps) => {
+export const Table = ({ data, columns, onRenderingChange, visible = true, theme = defaultTheme }: TableProps) => {
     const [columnStyles, setColumnStyles] = useState<Map<string, ColumnStyle>>(new Map());
 
     const { t } = useTranslation(undefined, { keyPrefix: 'components.table' });
@@ -130,7 +130,7 @@ export const Table = ({ data, columns, onRenderingChange, visible, theme = defau
     }, [columnStyles, columns]);
 
     useEffect(() => {
-        onRenderingChange(isRendering);
+        onRenderingChange?.(isRendering);
     }, [isRendering, onRenderingChange]);
 
     if (isRendering) return null;
