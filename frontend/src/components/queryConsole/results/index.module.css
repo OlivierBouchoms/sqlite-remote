@@ -1,9 +1,4 @@
 .results,
-.emptyState,
-.loadingState {
-}
-
-.results,
 .emptyState {
     display: flex;
     flex-direction: column;
@@ -18,6 +13,10 @@
 
 .loadingStateSpinner {
     margin: auto;
+    /*
+      Radix spinner with size 3 has 1.25 as multiplier
+      We want a larger spinner, use 1.5 as multiplier
+     */
     width: calc(1.5 * var(--space-4)) !important;
     height: calc(1.5 * var(--space-4)) !important;
 }
