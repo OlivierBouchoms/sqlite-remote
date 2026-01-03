@@ -43,6 +43,7 @@ The remote server hosts the actual SQLite database file.
 | Platform             | Status     | Notes                           |
 |----------------------|------------|---------------------------------|
 | Linux (Alpine 3.22)  | Verified   | Tested using Docker Mock server | 
+| Linux (Alpine 3.23)  | Verified   | Tested using Docker Mock server | 
 | Linux (Ubuntu 22.04) | Verified   | Tested using Docker mock server | 
 | Linux (Ubuntu 24.04) | Verified   | Tested using Docker mock server | 
 | Linux (other)        | Unknown    | Expected to work, needs testing |
@@ -55,7 +56,7 @@ The remote server hosts the actual SQLite database file.
 
 ![Connect to data source](./docs/images/add_data_source.png)
 
-### View data
+### Data display and query console
 
 ![View data](./docs/images/database_data.png)
 
