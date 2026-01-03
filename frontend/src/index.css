@@ -65,3 +65,7 @@ a:visited {
     color: var(--accent-11);
     text-decoration: none;
 }
+
+.cm-gutters {
+    background-color: var(--gray-2) !important;
+}

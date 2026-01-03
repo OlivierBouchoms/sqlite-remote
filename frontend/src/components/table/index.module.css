@@ -24,10 +24,6 @@
     border-bottom: none;
 }
 
-.header {
-    border-radius: var(--radius-2);
-}
-
 .table {
     /* display is set in JS */
     box-sizing: border-box;

@@ -5,6 +5,10 @@ import { FaCopy, FaPlay } from 'react-icons/fa6';
 import CodeMirror from '@uiw/react-codemirror';
 import styles from './index.module.css';
 import { sql, SQLite } from '@codemirror/lang-sql';
+import { useServerServicePostApiServerQuery } from '../../generated/api/queries';
+import { useDatabaseConfiguration } from '../../context/databaseConfigurationContext.tsx';
+import { QueryConsoleError } from './error';
+import { QueryConsoleResults } from './results';
 
 type Props = {
     open: boolean;
@@ -13,6 +17,10 @@ type Props = {
 export const QueryConsole = ({ open }: Props) => {
     const [content, setContent] = useState<string>('');
 
+    const { data: postQueryData, mutateAsync: postQuery, isPending: isPostingQuery, error: postQueryError } = useServerServicePostApiServerQuery();
+
+    const { selectedConfig } = useDatabaseConfiguration();
+
     const { t } = useTranslation(undefined, { keyPrefix: 'components.queryConsole' });
 
     const toolbarItems = useMemo((): ToolbarItemProps[] => {
@@ -20,8 +28,16 @@ export const QueryConsole = ({ open }: Props) => {
             {
                 icon: <FaPlay />,
                 label: t('toolbar.execute'),
-                onClick: () => {},
-                disabled: false,
+                onClick: async () => {
+                    if (!selectedConfig) return;
+
+                    const query = content.trim();
+                    if (query.length === 0) {
+                        return;
+                    }
+                    await postQuery({ requestBody: { dbPath: selectedConfig.dbPath, sshHost: selectedConfig.ssh.hostName, commandText: query } });
+                },
+                disabled: !content.trim().length || isPostingQuery,
             },
             {
                 icon: <FaCopy />,
@@ -29,10 +45,9 @@ export const QueryConsole = ({ open }: Props) => {
                 onClick: async () => {
                     await navigator.clipboard.writeText(content);
                 },
-                disabled: false,
             },
         ];
-    }, [content, t]);
+    }, [content, isPostingQuery, postQuery, selectedConfig, t]);
 
     return (
         <div className={styles.root} style={{ display: open ? 'flex' : 'none' }}>
@@ -46,6 +61,10 @@ export const QueryConsole = ({ open }: Props) => {
                     onChange={setContent}
                     value={content}
                 />
+            </div>
+            <div className={styles.bottomSection}>
+                <QueryConsoleResults data={postQueryData} loading={isPostingQuery} emptyStateLabel={t('noResults')} />
+                <QueryConsoleError error={postQueryError} />
             </div>
         </div>
     );

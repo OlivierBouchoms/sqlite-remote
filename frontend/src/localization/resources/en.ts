@@ -142,6 +142,7 @@ export const en = {
                     execute: 'Execute',
                     copy: 'Copy',
                 },
+                noResults: 'Query returned no results',
             },
         },
     },
