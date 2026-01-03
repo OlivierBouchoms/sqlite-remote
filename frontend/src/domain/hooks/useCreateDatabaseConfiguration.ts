@@ -3,7 +3,7 @@ import { QueryKey } from './common/QueryKey';
 import databaseConfigurationRepository from '../repository/databaseConfigurationRepository.ts';
 import { DatabaseConfiguration } from '../model/databaseConfiguration.ts';
 
-export type CreateDatabaseConfigurationArgs = Omit<DatabaseConfiguration, 'id'>;
+export type CreateDatabaseConfigurationArgs = Omit<DatabaseConfiguration, 'id' | 'queryConsole'>;
 
 export const useCreateDatabaseConfiguration = () => {
     const queryClient = useQueryClient();
@@ -13,6 +13,7 @@ export const useCreateDatabaseConfiguration = () => {
             const entity: DatabaseConfiguration = {
                 ...data,
                 id: crypto.randomUUID(),
+                queryConsole: { commandText: '' },
             };
 
             databaseConfigurationRepository.add(entity);

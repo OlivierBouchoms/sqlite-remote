@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Toolbar, ToolbarItemProps } from '../toolbar';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FaCopy, FaPlay } from 'react-icons/fa6';
 import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import styles from './index.module.css';
@@ -9,19 +9,23 @@ import { useServerServicePostApiServerQuery } from '../../generated/api/queries'
 import { useDatabaseConfiguration } from '../../context/databaseConfigurationContext.tsx';
 import { QueryConsoleError } from './error';
 import { QueryConsoleResults } from './results';
+import { useUpdateDatabaseConfiguration } from '../../domain/hooks/useUpdateDatabaseConfiguration.ts';
 
 type Props = {
     open: boolean;
 };
 
 export const QueryConsole = ({ open }: Props) => {
-    const [content, setContent] = useState<string>('');
+    const [commandText, setCommandText] = useState<string>();
+    const [selectedConfigId, setSelectedConfigId] = useState<string>('');
 
     const codeMirrorElement = useRef<ReactCodeMirrorRef | null>();
 
     const { data: postQueryData, mutateAsync: postQuery, isPending: isPostingQuery, error: postQueryError } = useServerServicePostApiServerQuery();
 
     const { selectedConfig } = useDatabaseConfiguration();
+
+    const { mutate: updateDatabaseConfiguration } = useUpdateDatabaseConfiguration();
 
     const { t } = useTranslation(undefined, { keyPrefix: 'components.queryConsole' });
 
@@ -35,8 +39,8 @@ export const QueryConsole = ({ open }: Props) => {
             }
         }
 
-        return content;
-    }, [content]);
+        return commandText ?? '';
+    }, [commandText]);
 
     const onExecute = useCallback(async () => {
         if (!selectedConfig) return;
@@ -55,31 +59,60 @@ export const QueryConsole = ({ open }: Props) => {
                 icon: <FaPlay />,
                 label: t('toolbar.execute'),
                 onClick: onExecute,
-                disabled: !content.trim().length || isPostingQuery,
+                disabled: !commandText?.trim().length || isPostingQuery,
             },
             {
                 icon: <FaCopy />,
                 label: t('toolbar.copy'),
                 onClick: async () => {
-                    await navigator.clipboard.writeText(content);
+                    if (commandText) await navigator.clipboard.writeText(commandText);
                 },
             },
         ];
-    }, [content, isPostingQuery, postQuery, selectedConfig, t]);
+    }, [commandText, isPostingQuery, onExecute, t]);
+
+    useEffect(() => {
+        if (selectedConfig && commandText === undefined) setCommandText(selectedConfig.queryConsole.commandText);
+
+        if (selectedConfig && selectedConfig.id !== selectedConfigId) {
+            setCommandText(selectedConfig.queryConsole.commandText);
+        }
+
+        setSelectedConfigId(selectedConfig?.id ?? '');
+    }, [commandText, selectedConfig, selectedConfigId]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const editorView = codeMirrorElement.current?.view;
+
+            if (selectedConfig && editorView) {
+                updateDatabaseConfiguration({
+                    ...selectedConfig,
+                    queryConsole: {
+                        commandText: editorView.state.doc.toString(),
+                    },
+                });
+            }
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [selectedConfig, updateDatabaseConfiguration]);
 
     return (
         <div className={styles.root} style={{ display: open ? 'flex' : 'none' }}>
             <Toolbar items={toolbarItems} />
             <div className={styles.editorWrapper}>
-                <CodeMirror
-                    ref={(e) => (codeMirrorElement.current = e)}
-                    className={styles.editor}
-                    height='100%'
-                    lang='sql'
-                    extensions={[sql({ upperCaseKeywords: true, dialect: SQLite })]}
-                    onChange={setContent}
-                    value={content}
-                />
+                {!!selectedConfig && (
+                    <CodeMirror
+                        ref={(e) => (codeMirrorElement.current = e)}
+                        className={styles.editor}
+                        height='100%'
+                        lang='sql'
+                        extensions={[sql({ upperCaseKeywords: true, dialect: SQLite })]}
+                        onChange={setCommandText}
+                        value={commandText}
+                    />
+                )}
             </div>
             <div className={styles.bottomSection}>
                 <QueryConsoleResults data={postQueryData} loading={isPostingQuery} emptyStateLabel={t('noResults')} />
