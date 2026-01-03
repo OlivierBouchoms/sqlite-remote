@@ -25,7 +25,7 @@ export const useUpdateDatabaseConfiguration = () => {
                 const next = old.slice();
 
                 next[index] = newConfig;
-                
+
                 return next;
             });
         },
