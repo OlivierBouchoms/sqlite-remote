@@ -1,8 +1,10 @@
+using Microsoft.Extensions.Options;
 using SqliteRemoteApi.Models;
+using SqliteRemoteApi.Options;
 
 namespace SqliteRemoteApi.Parser;
 
-public class SshConfigParser : ISshConfigParser
+public class SshConfigParser(IOptions<NetworkOptions> networkOptions, ILogger<SshConfigParser> logger) : ISshConfigParser
 {
     /// <summary>
     /// Parses the SSH config file located at the given path.
@@ -52,7 +54,8 @@ public class SshConfigParser : ISshConfigParser
             var line = lines[index].Trim();
             if (line.StartsWith("HostName "))
             {
-                sshHost.HostName = line.Substring("HostName ".Length).Trim();
+                var rawHostName = line.Substring("HostName ".Length).Trim();
+                sshHost.HostName = TranslateHostName(rawHostName);
             }
             else if (line.StartsWith("User "))
             {
@@ -82,5 +85,19 @@ public class SshConfigParser : ISshConfigParser
         if (string.IsNullOrEmpty(sshHost.IdentityFile)) throw new Exception($"SSH host {sshHost.Name} is missing a IdentityFile entry.");
         
         return sshHost;
+    }
+    
+    string TranslateHostName(string hostName)
+    {
+        logger.LogInformation("Translating hostname {HostName}. Enabled: {TranslateLoopbackAddress}. HostGateway: {HostGateway}", hostName,
+            networkOptions.Value.TranslateLoopbackAddress, networkOptions.Value.HostGateway);
+
+        if (networkOptions.Value.TranslateLoopbackAddress &&
+            networkOptions.Value.LoopbackAddresses.Contains(hostName, StringComparer.OrdinalIgnoreCase))
+        {
+            return networkOptions.Value.HostGateway;
+        }
+
+        return hostName;
     }
 }
