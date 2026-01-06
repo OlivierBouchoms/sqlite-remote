@@ -4,7 +4,7 @@ namespace SqliteRemoteApi.Paths;
 
 public class RemotePathTransformer : IPathTransformer
 {
-    public async Task<string> Transform(string path, SshClient sshClient, CancellationToken cancelToken)
+    public async Task<string> Transform(string path, ISshClient sshClient, CancellationToken cancelToken)
     {
         if (!path.StartsWith("~")) return path;
         
