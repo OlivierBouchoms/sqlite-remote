@@ -440,6 +440,14 @@
           "Microsoft.Extensions.Logging.Abstractions": "8.0.3"
         }
       },
+      "SshNet.Agent": {
+        "type": "Transitive",
+        "resolved": "2024.2.0.3-beta",
+        "contentHash": "6oYW7uWVDiEV6gK0AFl5/g5S5iNjszaZUKgDi1DHGxzTT7gQsgqIbws22e9qoEwNA5u8VJGrrqsPras9V7bSUA==",
+        "dependencies": {
+          "SSH.NET": "2024.2.0"
+        }
+      },
       "Swashbuckle.AspNetCore.Swagger": {
         "type": "Transitive",
         "resolved": "9.0.4",
@@ -557,6 +565,7 @@
         "dependencies": {
           "Microsoft.AspNetCore.OpenApi": "[8.0.20, )",
           "SSH.NET": "[2025.0.0, )",
+          "SshNet.Agent": "[2024.2.0.3-beta, )",
           "Swashbuckle.AspNetCore.Swagger": "[9.0.4, )",
           "Swashbuckle.AspNetCore.SwaggerGen": "[9.0.4, )",
           "Swashbuckle.AspNetCore.SwaggerUI": "[9.0.4, )"

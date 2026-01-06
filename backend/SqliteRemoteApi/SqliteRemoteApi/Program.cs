@@ -1,8 +1,9 @@
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using SqliteRemoteApi.Dto.Error;
+using SqliteRemoteApi.Factory;
 using SqliteRemoteApi.Manager;
+using SqliteRemoteApi.Options;
 using SqliteRemoteApi.Parser;
 using SqliteRemoteApi.Paths;
 
@@ -28,10 +29,18 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddOptions<NetworkOptions>()
+    .BindConfiguration("Network")
+    .ValidateDataAnnotations();
+
+builder.Services.AddOptions<SshOptions>()
+    .BindConfiguration("Ssh")
+    .ValidateDataAnnotations();
 
 builder.Services.AddSingleton<IDatabaseManager, SqLiteDatabaseManager>();
 builder.Services.AddSingleton<IPathTransformer, RemotePathTransformer>();
 builder.Services.AddSingleton<ISshConfigParser, SshConfigParser>();
+builder.Services.AddSingleton<ISshClientFactory, SshClientFactory>();
 
 builder.Services.AddProblemDetails(options =>
 {

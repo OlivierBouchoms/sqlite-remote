@@ -21,6 +21,15 @@
           "Microsoft.Extensions.Logging.Abstractions": "8.0.3"
         }
       },
+      "SshNet.Agent": {
+        "type": "Direct",
+        "requested": "[2024.2.0.3-beta, )",
+        "resolved": "2024.2.0.3-beta",
+        "contentHash": "6oYW7uWVDiEV6gK0AFl5/g5S5iNjszaZUKgDi1DHGxzTT7gQsgqIbws22e9qoEwNA5u8VJGrrqsPras9V7bSUA==",
+        "dependencies": {
+          "SSH.NET": "2024.2.0"
+        }
+      },
       "Swashbuckle.AspNetCore.Swagger": {
         "type": "Direct",
         "requested": "[9.0.4, )",

@@ -1,0 +1,31 @@
+name: 'SQLite Remote'
+
+services:
+  frontend:
+    image: olivierbouchoms/sqlite-remote-frontend
+    build:
+      context: frontend
+      args:
+        - VITE_API_URL=http://localhost:7777
+      x-bake:
+        platforms: [ linux/amd64, linux/arm64 ]
+    ports:
+      - "4444:80"
+
+  api:
+    image: olivierbouchoms/sqlite-remote-api
+    build:
+      context: backend/SqliteRemoteApi
+      x-bake:
+        platforms: [ linux/amd64, linux/arm64 ]
+    environment:
+      - ASPNETCORE_ENVIRONMENT=production
+      - ASPNETCORE_HTTP_PORTS=80
+      - SSH_AUTH_SOCK=${SSH_AUTH_SOCK}
+    ports:
+      - "7777:80"
+    volumes:
+      - ~/.ssh/config:/app/.ssh/config:ro
+      - ${SSH_AUTH_SOCK}:${SSH_AUTH_SOCK}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

@@ -1,15 +1,19 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Microsoft.Extensions.Options;
 using Renci.SshNet;
+using SqliteRemoteApi.Factory;
 using SqliteRemoteApi.Models;
 using SqliteRemoteApi.Models.Base;
+using SqliteRemoteApi.Options;
 using SqliteRemoteApi.Parser;
 using SqliteRemoteApi.Paths;
+using SshNet.Agent;
 
 namespace SqliteRemoteApi.Manager;
 
-public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, IPathTransformer pathTransformer, ILogger<SqLiteDatabaseManager> logger) : IDatabaseManager
+public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientFactory sshClientFactory, IPathTransformer pathTransformer, IOptions<SshOptions> sshOptions, ILogger<SqLiteDatabaseManager> logger) : IDatabaseManager
 {
     /// <summary>
     /// Timeout for connecting to the remote host
@@ -246,7 +250,7 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, IPathTransf
 
         try
         {
-            var sshConfig = await sshConfigParser.Parse("~/.ssh/config");
+            var sshConfig = await sshConfigParser.Parse(sshOptions.Value.ConfigPath);
             sshHost = sshConfig.Hosts.FirstOrDefault(h => h.Name == hostName);
         }
         catch (Exception e)
@@ -258,8 +262,7 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, IPathTransf
         if (sshHost is null)
             return new DatabaseServerConnectResult(null, null, false, null, DatabaseOperationError.SshHostNotFound);
 
-        var client = new SshClient(new PrivateKeyConnectionInfo(sshHost.HostName, sshHost.Port, sshHost.User,
-            new PrivateKeyFile(sshHost.IdentityFile)));
+        var client = sshClientFactory.CreateSshClient(sshHost);
 
         try
         {

@@ -4,5 +4,5 @@ namespace SqliteRemoteApi.Paths;
 
 public interface IPathTransformer
 {
-    Task<string> Transform(string path, SshClient sshClient, CancellationToken cancelToken);
+    Task<string> Transform(string path, ISshClient sshClient, CancellationToken cancelToken);
 }
