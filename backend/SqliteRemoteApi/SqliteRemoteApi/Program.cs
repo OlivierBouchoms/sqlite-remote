@@ -32,6 +32,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddSingleton<IDatabaseManager, SqLiteDatabaseManager>();
 builder.Services.AddSingleton<IPathTransformer, RemotePathTransformer>();
 builder.Services.AddSingleton<ISshConfigParser, SshConfigParser>();
+builder.Services.AddSingleton<ISshClientFactory, SshClientFactory>();
 
 builder.Services.AddProblemDetails(options =>
 {
