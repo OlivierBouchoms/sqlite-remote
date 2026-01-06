@@ -66,7 +66,16 @@ The remote server hosts the actual SQLite database file.
 
 ## Installation
 
-The app can't be installed directly yet. Docker Compose support is coming soon.
+The application can be run using Docker Compose and is accessible on [localhost:4444](localhost:4444).
+
+```shell
+# important: add SSH keys to SSH agent
+# ssh-add ~/.ssh/my_private_key
+
+git clone https://github.com/OlivierBouchoms/sqlite-remote.git
+cd sqlite-remote
+docker compose up -d
+```
 
 ## Getting started
 
