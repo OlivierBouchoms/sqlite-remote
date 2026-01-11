@@ -2,7 +2,7 @@ namespace SqliteRemoteApi.Paths;
 
 public class LocalPathTransformer : ILocalPathTransformer
 {
-    public string Transform(string path)
+    public string GetAbsolutePath(string path)
     {
         if (!path.StartsWith("~")) return path;
         

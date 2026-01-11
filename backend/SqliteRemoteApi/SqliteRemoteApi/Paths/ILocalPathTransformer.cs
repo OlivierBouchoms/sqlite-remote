@@ -4,5 +4,5 @@ namespace SqliteRemoteApi.Paths;
 
 public interface ILocalPathTransformer
 {
-    string Transform(string path);
+    string GetAbsolutePath(string path);
 }
