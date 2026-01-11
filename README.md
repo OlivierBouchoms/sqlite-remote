@@ -13,42 +13,19 @@ This eliminates risks of data corruption that might occur when SQLite databases 
 
 No software installation is required on the remote host - only the `sqlite3` binary and an SSH server!
 
-## Platform support
+## Installation
 
-### Local machine
+The application can be run using Docker Compose. After starting, open [localhost:4444](http://localhost:4444) to access the application.
 
-The local machine runs the SQLite Remote API and frontend client application.
+(i) Important: 
 
-#### OS
+Add your SSH identity file to your SSH agent, otherwise the application can't access them when running in Docker. Example: `ssh-add ~/.ssh/id_sqlite_remote`
 
-| Platform       | Status     | Notes                            |
-|----------------|------------|----------------------------------|
-| macOS          | Supported  | Backend is tested on dev machine |
-| Linux (Ubuntu) | Supported  | Backend is tested in Github CI   |
-| Linux (other)  | Unknown    | Expected to work, needs testing  |
-| Windows        | Unknown    | Not planned as of now            |
-
-#### Browser support
-
-| Browser | Status    |
-|---------|-----------|
-| Chrome  | Supported |
-| Firefox | Supported |
-| Safari  | Supported |
-
-### Remote server
-
-The remote server hosts the actual SQLite database file.
-
-| Platform             | Status     | Notes                           |
-|----------------------|------------|---------------------------------|
-| Linux (Alpine 3.22)  | Verified   | Tested using Docker Mock server | 
-| Linux (Alpine 3.23)  | Verified   | Tested using Docker Mock server | 
-| Linux (Ubuntu 22.04) | Verified   | Tested using Docker mock server | 
-| Linux (Ubuntu 24.04) | Verified   | Tested using Docker mock server | 
-| Linux (other)        | Unknown    | Expected to work, needs testing |
-| macOS                | Unknown    | Not planned as of now           |
-| Windows              | Unknown    | Not planned as of now           |
+```shell
+git clone https://github.com/OlivierBouchoms/sqlite-remote.git
+cd sqlite-remote
+docker compose up -d
+```
 
 ## Features
 
@@ -63,19 +40,6 @@ The remote server hosts the actual SQLite database file.
 ### View schema
 
 ![View schema](./docs/images/database_schema.png)
-
-## Installation
-
-The application can be run using Docker Compose and is accessible on [localhost:4444](localhost:4444).
-
-```shell
-# important: add SSH keys to SSH agent
-# ssh-add ~/.ssh/my_private_key
-
-git clone https://github.com/OlivierBouchoms/sqlite-remote.git
-cd sqlite-remote
-docker compose up -d
-```
 
 ## Getting started
 
@@ -118,3 +82,39 @@ The following SSH config fields of a host entry are currently parsed and support
 * [Backend](./backend): .NET REST API which accesses the SQLite database over SSH
 * [Frontend](./frontend): React user interface
 * [Mock server](./mock-server): a Docker compose stack which contains a SQLite database and an SSH server, for local testing
+
+## Platform support
+
+### Local machine
+
+The local machine runs the SQLite Remote API and frontend client application.
+
+#### OS
+
+| Platform       | Status     | Notes                                |
+|----------------|------------|--------------------------------------|
+| macOS          | Supported  | Tested on dev machine                |
+| Linux (Ubuntu) | Supported  | Tested on Ubuntu VMs (22.04 & 24.04) |
+| Linux (other)  | Unknown    | Expected to work                     |
+| Windows        | Unknown    |                                      |
+
+#### Browser support
+
+| Browser | Status    |
+|---------|-----------|
+| Chrome  | Supported |
+| Firefox | Supported |
+| Safari  | Supported |
+
+### Remote server
+
+The remote server hosts the actual SQLite database file.
+
+| Platform             | Status     | Notes                           |
+|----------------------|------------|---------------------------------|
+| Linux (Alpine 3.22)  | Verified   | Tested using Docker Mock server | 
+| Linux (Alpine 3.23)  | Verified   | Tested using Docker Mock server | 
+| Linux (Ubuntu 22.04) | Verified   | Tested using Docker mock server | 
+| Linux (Ubuntu 24.04) | Verified   | Tested using Docker mock server | 
+| Linux (other)        | Unknown    | Expected to work                |
+| Windows              | Unknown    |                                 |
