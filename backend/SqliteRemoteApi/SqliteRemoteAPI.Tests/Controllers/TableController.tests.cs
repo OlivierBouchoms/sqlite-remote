@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.WebUtilities;
 using SqliteRemoteApi.Dto;
+using SqliteRemoteApi.Dto.Error;
+using SqliteRemoteApi.Models;
 using SqliteRemoteApi.Models.Base;
 using SqliteRemoteAPI.Tests.Config.Constants;
 using SqliteRemoteAPI.Tests.Config.Data;
@@ -21,11 +23,12 @@ public partial class TableControllerTests(ITestOutputHelper output)
     public async Task GET_Table_Index_ShouldReturn200_WhenValidRequest(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new TableIndexRequestDto(host, MockDatabase.Path);
+        var requestDto = new TableIndexRequestDto(MockDatabase.Path);
+        var hostDto = new SshHostRequestDto(host);
 
         var queryString = QueryHelpers.AddQueryString("/api/table", new Dictionary<string, string>
         {
-            { nameof(requestDto.SshHost), requestDto.SshHost },
+            { nameof(hostDto.HostName), hostDto.HostName },
             { nameof(requestDto.DbPath), requestDto.DbPath }
         });
 
@@ -41,22 +44,24 @@ public partial class TableControllerTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public async Task GET_Table_Index_ShouldReturn500_SshHostNotFound_WhenInvalidHost()
+    public async Task GET_Table_Index_ShouldReturn500_SshHostNotFound_WhenUnknownHostNotInConfig()
     {
         var client = _factory.CreateClient();
-        var requestDto = new TableIndexRequestDto("unknown", MockDatabase.Path);
+        var requestDto = new TableIndexRequestDto(MockDatabase.Path);
+        var hostDto = new SshHostRequestDto("unknown-host");
 
         var queryString = QueryHelpers.AddQueryString("/api/table", new Dictionary<string, string>
         {
-            { nameof(requestDto.SshHost), requestDto.SshHost },
+            { nameof(hostDto.HostName), hostDto.HostName },
             { nameof(requestDto.DbPath), requestDto.DbPath }
         });
 
         var response = await client.GetAsync(queryString);
-        var responseData = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-        Assert.Equal(nameof(DatabaseOperationError.SshHostNotFound), responseData.Detail);
+        Assert.Equal(DatabaseOperationError.ConnectFailed, responseData.Detail);
+        Assert.Equal(SshHostOrigin.Inline, responseData.SshHost.Origin);
     }
 
     [ClassData(typeof(MockServerClassData))]
@@ -64,19 +69,21 @@ public partial class TableControllerTests(ITestOutputHelper output)
     public async Task GET_Table_Index_ShouldReturn500_DatabaseNotFound_WhenInvalidPath(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new TableIndexRequestDto(host, "/db/unknown.db");
+        var requestDto = new TableIndexRequestDto("/db/unknown.db");
+        var hostDto = new SshHostRequestDto(host);
 
         var queryString = QueryHelpers.AddQueryString("/api/table", new Dictionary<string, string>
         {
-            { nameof(requestDto.SshHost), requestDto.SshHost },
+            { nameof(hostDto.HostName), hostDto.HostName },
             { nameof(requestDto.DbPath), requestDto.DbPath }
         });
 
         var response = await client.GetAsync(queryString);
-        var responseData = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-        Assert.Equal(nameof(DatabaseOperationError.DatabaseNotFound), responseData.Detail);
+        Assert.Equal(DatabaseOperationError.DatabaseNotFound, responseData.Detail);
+        Assert.Equal(SshHostOrigin.SshConfig, responseData.SshHost.Origin);
     }
 
     [ClassData(typeof(MockServerAndTableClassData))]
@@ -84,11 +91,12 @@ public partial class TableControllerTests(ITestOutputHelper output)
     public async Task GET_Table_Data_ShouldReturn200_WhenValidRequest(string host, string tableName)
     {
         var client = _factory.CreateClient();
-        var requestDto = new TableDataRequestDto(host, MockDatabase.Path);
+        var requestDto = new TableDataRequestDto(MockDatabase.Path);
+        var hostDto = new SshHostRequestDto(host);
 
         var queryString = QueryHelpers.AddQueryString($"/api/table/{tableName}/data", new Dictionary<string, string>
         {
-            { nameof(requestDto.SshHost), requestDto.SshHost },
+            { nameof(hostDto.HostName), hostDto.HostName },
             { nameof(requestDto.DbPath), requestDto.DbPath }
         });
 
@@ -102,22 +110,24 @@ public partial class TableControllerTests(ITestOutputHelper output)
     }
 
     [Fact]
-    public async Task GET_Table_Data_ShouldReturn500_SshHostNotFound_WhenInvalidHost()
+    public async Task GET_Table_Data_ShouldReturn500_ConnectFailed_WhenUnknownHostNotInConfig()
     {
         var client = _factory.CreateClient();
-        var requestDto = new TableDataRequestDto("unknown", MockDatabase.Path);
+        var requestDto = new TableDataRequestDto(MockDatabase.Path);
+        var hostDto = new SshHostRequestDto("unknown-host");
 
         var queryString = QueryHelpers.AddQueryString($"/api/table/{MockDatabase.TestableTables[0]}/data", new Dictionary<string, string>
         {
-            { nameof(requestDto.SshHost), requestDto.SshHost },
+            { nameof(hostDto.HostName), hostDto.HostName },
             { nameof(requestDto.DbPath), requestDto.DbPath }
         });
 
         var response = await client.GetAsync(queryString);
-        var responseData = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-        Assert.Equal(nameof(DatabaseOperationError.SshHostNotFound), responseData.Detail);
+        Assert.Equal(DatabaseOperationError.ConnectFailed, responseData.Detail);
+        Assert.Equal(SshHostOrigin.Inline, responseData.SshHost.Origin);
     }
 
     [ClassData(typeof(MockServerClassData))]
@@ -125,19 +135,21 @@ public partial class TableControllerTests(ITestOutputHelper output)
     public async Task GET_Table_Data_ShouldReturn500_DatabaseNotFound_WhenInvalidPath(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new TableDataRequestDto(host, "/db/unknown.db");
-
+        var requestDto = new TableDataRequestDto("/db/unknown.db");
+        var hostDto = new SshHostRequestDto(host);
+        
         var queryString = QueryHelpers.AddQueryString($"/api/table/{MockDatabase.TestableTables[0]}/data", new Dictionary<string, string>
         {
-            { nameof(requestDto.SshHost), requestDto.SshHost },
+            { nameof(hostDto.HostName), hostDto.HostName },
             { nameof(requestDto.DbPath), requestDto.DbPath }
         });
 
         var response = await client.GetAsync(queryString);
-        var responseData = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-        Assert.Equal(nameof(DatabaseOperationError.DatabaseNotFound), responseData.Detail);
+        Assert.Equal(DatabaseOperationError.DatabaseNotFound, responseData.Detail);
+        Assert.Equal(SshHostOrigin.SshConfig, responseData.SshHost.Origin);
     }
 
     [ClassData(typeof(MockServerAndTableClassData))]
@@ -145,11 +157,12 @@ public partial class TableControllerTests(ITestOutputHelper output)
     public async Task GET_Table_Schema_ShouldReturn200_WhenValidRequest(string host, string tableName)
     {
         var client = _factory.CreateClient();
-        var requestDto = new TableDataRequestDto(host, "/db/sqlite.db");
+        var requestDto = new TableDataRequestDto("/db/sqlite.db");
+        var hostDto = new SshHostRequestDto(host);
 
         var queryString = QueryHelpers.AddQueryString($"/api/table/{tableName}/schema", new Dictionary<string, string>
         {
-            { nameof(requestDto.SshHost), requestDto.SshHost },
+            { nameof(hostDto.HostName), hostDto.HostName },
             { nameof(requestDto.DbPath), requestDto.DbPath }
         });
 
@@ -162,24 +175,25 @@ public partial class TableControllerTests(ITestOutputHelper output)
         Assert.NotEmpty(responseData.Columns);
     }
 
-
     [Fact]
-    public async Task GET_Table_Schema_ShouldReturn500_SshHostNotFound_WhenInvalidHost()
+    public async Task GET_Table_Schema_ShouldReturn500_ConnectFailed_WhenUnknownHostNotInConfig()
     {
         var client = _factory.CreateClient();
-        var requestDto = new TableSchemaRequestDto("unknown", MockDatabase.Path);
-
+        var requestDto = new TableSchemaRequestDto(MockDatabase.Path);
+        var hostDto = new SshHostRequestDto("unknown-host");
+        
         var queryString = QueryHelpers.AddQueryString($"/api/table/{MockDatabase.TestableTables[0]}/schema", new Dictionary<string, string>
         {
-            { nameof(requestDto.SshHost), requestDto.SshHost },
+            { nameof(hostDto.HostName), hostDto.HostName },
             { nameof(requestDto.DbPath), requestDto.DbPath }
         });
 
         var response = await client.GetAsync(queryString);
-        var responseData = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-        Assert.Equal(nameof(DatabaseOperationError.SshHostNotFound), responseData.Detail);
+        Assert.Equal(DatabaseOperationError.ConnectFailed, responseData.Detail);
+        Assert.Equal(SshHostOrigin.Inline, responseData.SshHost.Origin);
     }
 
     [ClassData(typeof(MockServerClassData))]
@@ -187,18 +201,20 @@ public partial class TableControllerTests(ITestOutputHelper output)
     public async Task GET_Table_Schema_ShouldReturn500_DatabaseNotFound_WhenInvalidPath(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new TableSchemaRequestDto(host, "/db/unknown.db");
+        var requestDto = new TableSchemaRequestDto("/db/unknown.db");
+        var hostDto = new SshHostRequestDto(host);
 
         var queryString = QueryHelpers.AddQueryString($"/api/table/{MockDatabase.TestableTables[0]}/schema", new Dictionary<string, string>
         {
-            { nameof(requestDto.SshHost), requestDto.SshHost },
+            { nameof(hostDto.HostName), hostDto.HostName },
             { nameof(requestDto.DbPath), requestDto.DbPath }
         });
 
         var response = await client.GetAsync(queryString);
-        var responseData = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-        Assert.Equal(nameof(DatabaseOperationError.DatabaseNotFound), responseData.Detail);
+        Assert.Equal(DatabaseOperationError.DatabaseNotFound, responseData.Detail);
+        Assert.Equal(SshHostOrigin.SshConfig, responseData.SshHost.Origin);
     }
 }

@@ -1,10 +1,11 @@
 using Microsoft.Extensions.Options;
 using SqliteRemoteApi.Models;
 using SqliteRemoteApi.Options;
+using SqliteRemoteApi.Paths;
 
 namespace SqliteRemoteApi.Parser;
 
-public class SshConfigParser(IOptions<NetworkOptions> networkOptions, ILogger<SshConfigParser> logger) : ISshConfigParser
+public class SshConfigParser(ILocalPathTransformer pathTransformer, IOptions<NetworkOptions> networkOptions, ILogger<SshConfigParser> logger) : ISshConfigParser
 {
     /// <summary>
     /// Parses the SSH config file located at the given path.
@@ -44,7 +45,8 @@ public class SshConfigParser(IOptions<NetworkOptions> networkOptions, ILogger<Ss
         {
             Name = host,
             HostName = host,
-            Port = 22
+            Port = 22,
+            Origin = SshHostOrigin.SshConfig
         };
 
         index++;
@@ -65,9 +67,7 @@ public class SshConfigParser(IOptions<NetworkOptions> networkOptions, ILogger<Ss
             {
                 var identityFilePath = line.Substring("IdentityFile ".Length).Trim();
 
-                sshHost.IdentityFile = identityFilePath.StartsWith('~')
-                    ? Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), identityFilePath[1..])
-                    : identityFilePath;
+                sshHost.IdentityFile = pathTransformer.GetAbsolutePath(identityFilePath);
             }
             else if (line.StartsWith("Port "))
             {

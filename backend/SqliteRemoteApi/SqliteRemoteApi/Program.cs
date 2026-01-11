@@ -38,7 +38,8 @@ builder.Services.AddOptions<SshOptions>()
     .ValidateDataAnnotations();
 
 builder.Services.AddSingleton<IDatabaseManager, SqLiteDatabaseManager>();
-builder.Services.AddSingleton<IPathTransformer, RemotePathTransformer>();
+builder.Services.AddSingleton<ILocalPathTransformer, LocalPathTransformer>();
+builder.Services.AddSingleton<IRemotePathTransformer, SshPathTransformer>();
 builder.Services.AddSingleton<ISshConfigParser, SshConfigParser>();
 builder.Services.AddSingleton<ISshClientFactory, SshClientFactory>();
 
@@ -47,6 +48,7 @@ builder.Services.AddProblemDetails(options =>
     options.CustomizeProblemDetails = context =>
     {
         context.ProblemDetails.Extensions.TryAdd("detailContext", context.HttpContext.Items[nameof(DatabaseErrorResponseDto.DetailContext)]);
+        context.ProblemDetails.Extensions.TryAdd("sshHost", context.HttpContext.Items[nameof(DatabaseErrorResponseDto.SshHost)]);
     };
 });
 var app = builder.Build();

@@ -2,4 +2,4 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SqliteRemoteApi.Dto;
 
-public record ServerConnectRequestDto([param: Required] string SshHost, [param: Required] string DbPath);
+public record ServerConnectRequestDto([param: Required] SshHostRequestDto Host, [param: Required] string DbPath);

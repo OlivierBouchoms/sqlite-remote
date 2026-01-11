@@ -16,11 +16,12 @@ public partial class TableControllerTests
     public async Task Snapshot_GET_Table_Index(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new TableIndexRequestDto(host, "/db/sqlite.db");
-        
+        var requestDto = new TableIndexRequestDto("/db/sqlite.db");
+        var hostDto = new SshHostRequestDto(host);
+
         var queryString = QueryHelpers.AddQueryString("/api/table", new Dictionary<string, string>
         {
-            { nameof(requestDto.SshHost), requestDto.SshHost },
+            { nameof(hostDto.HostName), hostDto.HostName },
             { nameof(requestDto.DbPath), requestDto.DbPath }
         });
 
@@ -34,11 +35,12 @@ public partial class TableControllerTests
     public async Task Snapshot_GET_Table_Data(string host, string tableName)
     {
         var client = _factory.CreateClient();
-        var requestDto = new TableDataRequestDto(host, "/db/sqlite.db");
-        
+        var requestDto = new TableDataRequestDto("/db/sqlite.db");
+        var hostDto = new SshHostRequestDto(host);
+
         var queryString = QueryHelpers.AddQueryString($"/api/table/{tableName}/data", new Dictionary<string, string>
         {
-            { nameof(requestDto.SshHost), requestDto.SshHost },
+            { nameof(hostDto.HostName), hostDto.HostName },
             { nameof(requestDto.DbPath), requestDto.DbPath }
         });
 
@@ -54,11 +56,12 @@ public partial class TableControllerTests
     public async Task Snapshot_GET_Table_Schema(string host, string tableName)
     {
         var client = _factory.CreateClient();
-        var requestDto = new TableDataRequestDto(host, "/db/sqlite.db");
-        
+        var requestDto = new TableDataRequestDto("/db/sqlite.db");
+        var hostDto = new SshHostRequestDto(host);
+
         var queryString = QueryHelpers.AddQueryString($"/api/table/{tableName}/schema", new Dictionary<string, string>
         {
-            { nameof(requestDto.SshHost), requestDto.SshHost },
+            { nameof(hostDto.HostName), hostDto.HostName },
             { nameof(requestDto.DbPath), requestDto.DbPath }
         });
 
@@ -66,6 +69,7 @@ public partial class TableControllerTests
 
         response.EnsureSuccessStatusCode();
 
-        await Verify(await response.Content.ReadFromJsonAsync<TableSchemaResponseDto>(), SnapshotSettings.Default).UseParameters(host, tableName.Replace(" ", "_"));
+        await Verify(await response.Content.ReadFromJsonAsync<TableSchemaResponseDto>(), SnapshotSettings.Default)
+            .UseParameters(host, tableName.Replace(" ", "_"));
     }
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using SqliteRemoteApi.Models;
 using SqliteRemoteApi.Models.Base;
 
 namespace SqliteRemoteApi.Dto.Error;
@@ -39,5 +40,10 @@ public class DatabaseErrorResponseDto
   /// Extension to <see cref="Detail"/>. Provides a human-readable explanation specific to this occurrence of the problem.
   /// </summary>
   public string DetailContext { get; init; }
+  
+  /// <summary>
+  /// Provides information about the remote host involved in the error.
+  /// </summary>
+  public DatabaseOperationSshHostDto? SshHost { get; init; }
 }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.

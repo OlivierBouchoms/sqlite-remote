@@ -12,13 +12,13 @@ public class SshClientFactory(ILogger<SshClientFactory> logger) : ISshClientFact
     {
         if (TryGetPrivateKeyFile(host, out var privateKeyFile))
         {
-            logger.LogDebug("Using private key file {IdentityFile} for SSH connection to {Name} ({Host}:{Port}) as user {User}",
+            logger.LogInformation("Using private key file {IdentityFile} for SSH connection to {Name} ({Host}:{Port}) as user {User}",
                 host.IdentityFile, host.Name, host.HostName, host.Port, host.User);
 
             return new SshClient(host.HostName, host.Port, host.User, privateKeyFile!);
         }
 
-        logger.LogDebug("Using agent for SSH connection to {Name} ({Host}:{Port}) as user {User}", host.HostName, host.Name, host.Port, host.User);
+        logger.LogInformation("Using SSH agent for SSH connection to {Name} ({Host}:{Port}) as user {User}", host.HostName, host.Name, host.Port, host.User);
 
         var agent = new SshAgent();
 
@@ -32,7 +32,12 @@ public class SshClientFactory(ILogger<SshClientFactory> logger) : ISshClientFact
     {
         privateKeyFile = null;
 
-        if (string.IsNullOrEmpty(host.HostName)) return false;
+        if (string.IsNullOrEmpty(host.HostName) || string.IsNullOrEmpty(host.IdentityFile)) return false;
+
+        if (!File.Exists(host.IdentityFile)) {
+            logger.LogWarning("Private key file {IdentityFile} does not exist", host.IdentityFile);
+            return false;
+        }
 
         try
         {

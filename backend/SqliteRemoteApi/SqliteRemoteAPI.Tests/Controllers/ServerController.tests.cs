@@ -1,11 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Json;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.WebUtilities;
 using SqliteRemoteApi.Dto;
 using SqliteRemoteApi.Dto.Error;
+using SqliteRemoteApi.Models;
 using SqliteRemoteApi.Models.Base;
 using SqliteRemoteAPI.Tests.Config.Constants;
 using SqliteRemoteAPI.Tests.Config.Data;
@@ -23,11 +23,11 @@ public partial class ServerControllerTests(ITestOutputHelper output)
     public async Task GET_Server_Connect_ShouldReturn200_WhenValidRequest(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new ServerConnectRequestDto(host, MockDatabase.Path);
+        var requestDto = new ServerConnectRequestDto(new SshHostRequestDto(host), MockDatabase.Path);
 
         var queryString = QueryHelpers.AddQueryString("/api/server/connection", new Dictionary<string, string>
         {
-            { nameof(requestDto.SshHost), requestDto.SshHost },
+            { "Host.HostName", requestDto.Host.HostName },
             { nameof(requestDto.DbPath), requestDto.DbPath }
         });
 
@@ -38,25 +38,53 @@ public partial class ServerControllerTests(ITestOutputHelper output)
         var responseData = await response.Content.ReadFromJsonAsync<ServerConnectResponseDto>();
 
         Assert.Equal(requestDto.DbPath, responseData.DbPath);
+        Assert.Equal(SshHostOrigin.SshConfig, responseData.SshHost.Origin);
     }
-
-    [Fact]
-    public async Task GET_Server_Connect_ShouldReturn500_SshHostNotFound_WhenInvalidHost()
+    
+    [ClassData(typeof(InlineMockServerClassData))]
+    [Theory]
+    public async Task GET_Server_Connect_ShouldReturn200_WhenValidRequest_ForInlineMockServer(InlineMockServer host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new ServerConnectRequestDto("unknown", MockDatabase.Path);
+        var requestDto = new ServerConnectRequestDto(new SshHostRequestDto(host.HostName, host.User, host.Port, host.IdentityFilePath), MockDatabase.Path);
 
         var queryString = QueryHelpers.AddQueryString("/api/server/connection", new Dictionary<string, string>
         {
-            { nameof(requestDto.SshHost), requestDto.SshHost },
+            { "Host.HostName", requestDto.Host.HostName },
+            { "Host.User", requestDto.Host.User },
+            { "Host.Port", requestDto.Host.Port.ToString() },
+            { "Host.IdentityFilePath", requestDto.Host.IdentityFilePath },
             { nameof(requestDto.DbPath), requestDto.DbPath }
         });
 
         var response = await client.GetAsync(queryString);
-        var responseData = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+        response.EnsureSuccessStatusCode();
+
+        var responseData = await response.Content.ReadFromJsonAsync<ServerConnectResponseDto>();
+
+        Assert.Equal(requestDto.DbPath, responseData.DbPath);
+        Assert.Equal(SshHostOrigin.Inline, responseData.SshHost.Origin);
+    }
+
+    [Fact]
+    public async Task GET_Server_Connect_ShouldReturn500_ConnectFailed_WhenUnknownHostNotInConfig()
+    {
+        var client = _factory.CreateClient();
+        var requestDto = new ServerConnectRequestDto(new SshHostRequestDto("unknown-host"), MockDatabase.Path);
+
+        var queryString = QueryHelpers.AddQueryString("/api/server/connection", new Dictionary<string, string>
+        {
+            { "Host.HostName", requestDto.Host.HostName },
+            { nameof(requestDto.DbPath), requestDto.DbPath }
+        });
+
+        var response = await client.GetAsync(queryString);
+        var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-        Assert.Equal(nameof(DatabaseOperationError.SshHostNotFound), responseData.Detail);
+        Assert.Equal(DatabaseOperationError.ConnectFailed, responseData.Detail);
+        Assert.Equal(SshHostOrigin.Inline, responseData.SshHost.Origin);
     }
 
     [ClassData(typeof(MockServerClassData))]
@@ -64,21 +92,21 @@ public partial class ServerControllerTests(ITestOutputHelper output)
     public async Task GET_Server_Connect_ShouldReturn500_DatabaseNotFound_WhenInvalidPath(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new ServerConnectRequestDto(host, "/db/unknown.db");
+        var requestDto = new ServerConnectRequestDto(new SshHostRequestDto(host), "/db/unknown.db");
 
         var queryString = QueryHelpers.AddQueryString("/api/server/connection", new Dictionary<string, string>
         {
-            { nameof(requestDto.SshHost), requestDto.SshHost },
+            { "Host.HostName", requestDto.Host.HostName },
             { nameof(requestDto.DbPath), requestDto.DbPath }
         });
 
         var response = await client.GetAsync(queryString);
+        
+        var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-
-        var responseData = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-
-        Assert.Equal(nameof(DatabaseOperationError.DatabaseNotFound), responseData.Detail);
+        Assert.Equal(DatabaseOperationError.DatabaseNotFound, responseData.Detail);
+        Assert.Equal(SshHostOrigin.SshConfig, responseData.SshHost.Origin);
     }
 
     [ClassData(typeof(MockServerClassData))]
@@ -86,7 +114,7 @@ public partial class ServerControllerTests(ITestOutputHelper output)
     public async Task POST_Server_Query_ShouldReturn200_WhenValidSelectQueryWithResults(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path,
+        var requestDto = new ServerQueryRequestDto(new SshHostRequestDto(host), MockDatabase.Path,
             "SELECT CategoryID, CategoryName, Description FROM Categories ORDER BY CategoryID LIMIT 3");
 
         var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
@@ -105,7 +133,7 @@ public partial class ServerControllerTests(ITestOutputHelper output)
     public async Task POST_Server_Query_ShouldReturn200_WhenValidMultiLineSelectQueryWithResults(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path,
+        var requestDto = new ServerQueryRequestDto(new SshHostRequestDto(host), MockDatabase.Path,
             @"
 SELECT
     c.CustomerID,
@@ -151,7 +179,7 @@ ORDER BY (
     public async Task POST_Server_Query_ShouldReturn200_WhenValidSelectQueryWithNoResults(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path, "SELECT CategoryID FROM Categories WHERE 1 != 1");
+        var requestDto = new ServerQueryRequestDto(new SshHostRequestDto(host), MockDatabase.Path, "SELECT CategoryID FROM Categories WHERE 1 != 1");
 
         var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
 
@@ -169,7 +197,7 @@ ORDER BY (
     public async Task POST_Server_Query_ShouldReturn200_WhenValidSelectQueriesWithResults(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path, "SELECT 1; SELECT 2; SELECT 3");
+        var requestDto = new ServerQueryRequestDto(new SshHostRequestDto(host), MockDatabase.Path, "SELECT 1; SELECT 2; SELECT 3");
 
         var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
 
@@ -190,7 +218,7 @@ ORDER BY (
     public async Task POST_Server_Query_ShouldReturn200_WhenValidUpdateQueryWithNoModifiedRows(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path, "UPDATE Categories SET Description = 'update' WHERE 1 != 1");
+        var requestDto = new ServerQueryRequestDto(new SshHostRequestDto(host), MockDatabase.Path, "UPDATE Categories SET Description = 'update' WHERE 1 != 1");
 
         var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
 
@@ -210,7 +238,7 @@ ORDER BY (
     public async Task POST_Server_Query_ShouldReturn200_WhenValidDeleteQueryWithNoModifiedRows(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path, "DELETE FROM Categories WHERE 1 != 1");
+        var requestDto = new ServerQueryRequestDto(new SshHostRequestDto(host), MockDatabase.Path, "DELETE FROM Categories WHERE 1 != 1");
 
         var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
 
@@ -229,7 +257,7 @@ ORDER BY (
     public async Task POST_Server_Query_ShouldReturn500_DatabaseCommandFailed_WhenInvalidTable(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path, "SELECT * FROM __unknown_table__");
+        var requestDto = new ServerQueryRequestDto(new SshHostRequestDto(host), MockDatabase.Path, "SELECT * FROM __unknown_table__");
 
         var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
         var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
@@ -244,7 +272,7 @@ ORDER BY (
     public async Task POST_Server_Query_ShouldReturn500_DatabaseCommandFailed_WhenInvalidColumn(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path, "SELECT __unknown_column__ FROM Categories");
+        var requestDto = new ServerQueryRequestDto(new SshHostRequestDto(host), MockDatabase.Path, "SELECT __unknown_column__ FROM Categories");
 
         var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
         var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
@@ -259,7 +287,7 @@ ORDER BY (
     public async Task POST_Server_Query_ShouldReturn500_DatabaseCommandFailed_WhenInvalidSyntax(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new ServerQueryRequestDto(host, MockDatabase.Path, "SEL__ECT CategoryId FROM Categories");
+        var requestDto = new ServerQueryRequestDto(new SshHostRequestDto(host), MockDatabase.Path, "SEL__ECT CategoryId FROM Categories");
 
         var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
         var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
@@ -270,16 +298,17 @@ ORDER BY (
     }
     
     [Fact]
-    public async Task POST_Server_Query_ShouldReturn500_SshHostNotFound_WhenInvalidHost()
+    public async Task POST_Server_Query_ShouldReturn500_ConnectFailed_WhenUnknownHostNotInConfig()
     {
         var client = _factory.CreateClient();
-        var requestDto = new ServerQueryRequestDto("unknown", MockDatabase.Path, "DELETE FROM Categories WHERE 1 != 1");
+        var requestDto = new ServerQueryRequestDto(new SshHostRequestDto("unknown-host"), MockDatabase.Path, "DELETE FROM Categories WHERE 1 != 1");
 
         var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
-        var responseData = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-        Assert.Equal(nameof(DatabaseOperationError.SshHostNotFound), responseData.Detail);
+        Assert.Equal(DatabaseOperationError.ConnectFailed, responseData.Detail);
+        Assert.Equal(SshHostOrigin.Inline, responseData.SshHost.Origin);
     }
 
     [ClassData(typeof(MockServerClassData))]
@@ -287,12 +316,13 @@ ORDER BY (
     public async Task POST_Server_Query_ShouldReturn500_DatabaseNotFound_WhenInvalidPath(string host)
     {
         var client = _factory.CreateClient();
-        var requestDto = new ServerQueryRequestDto(host, "/db/unknown.db", "DELETE FROM Categories WHERE 1 != 1");
+        var requestDto = new ServerQueryRequestDto(new SshHostRequestDto(host), "/db/unknown.db", "DELETE FROM Categories WHERE 1 != 1");
 
         var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
-        var responseData = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        var responseData = await response.Content.ReadFromJsonAsync<DatabaseErrorResponseDto>();
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-        Assert.Equal(nameof(DatabaseOperationError.DatabaseNotFound), responseData.Detail);
+        Assert.Equal(DatabaseOperationError.DatabaseNotFound, responseData.Detail);
+        Assert.Equal(SshHostOrigin.SshConfig, responseData.SshHost.Origin);
     }
 }
