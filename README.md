@@ -91,12 +91,12 @@ The local machine runs the SQLite Remote API and frontend client application.
 
 #### OS
 
-| Platform       | Status     | Notes                            |
-|----------------|------------|----------------------------------|
-| macOS          | Supported  | Backend is tested on dev machine |
-| Linux (Ubuntu) | Supported  | Backend is tested in Github CI   |
-| Linux (other)  | Unknown    | Expected to work, needs testing  |
-| Windows        | Unknown    | Not planned as of now            |
+| Platform       | Status     | Notes                                |
+|----------------|------------|--------------------------------------|
+| macOS          | Supported  | Tested on dev machine                |
+| Linux (Ubuntu) | Supported  | Tested on Ubuntu VMs (22.04 & 24.04) |
+| Linux (other)  | Unknown    | Expected to work                     |
+| Windows        | Unknown    |                                      |
 
 #### Browser support
 
@@ -116,6 +116,5 @@ The remote server hosts the actual SQLite database file.
 | Linux (Alpine 3.23)  | Verified   | Tested using Docker Mock server | 
 | Linux (Ubuntu 22.04) | Verified   | Tested using Docker mock server | 
 | Linux (Ubuntu 24.04) | Verified   | Tested using Docker mock server | 
-| Linux (other)        | Unknown    | Expected to work, needs testing |
-| macOS                | Unknown    | Not planned as of now           |
-| Windows              | Unknown    | Not planned as of now           |
+| Linux (other)        | Unknown    | Expected to work                |
+| Windows              | Unknown    |                                 |
