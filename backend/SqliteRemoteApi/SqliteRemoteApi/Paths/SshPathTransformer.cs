@@ -2,7 +2,7 @@ using Renci.SshNet;
 
 namespace SqliteRemoteApi.Paths;
 
-public class RemotePathTransformer : IPathTransformer
+public class SshPathTransformer : IRemotePathTransformer
 {
     public async Task<string> Transform(string path, ISshClient sshClient, CancellationToken cancelToken)
     {
