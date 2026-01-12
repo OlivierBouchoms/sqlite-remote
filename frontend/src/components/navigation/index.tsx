@@ -31,7 +31,7 @@ export default function NavigationMenu() {
     const { refetch: refetchTableData } = useTableServiceGetApiTableByNameData(
         {
             name: selectedTable?.name ?? '',
-            sshHost: selectedConfig?.ssh.hostName,
+            hostName: selectedConfig?.ssh.hostName,
             dbPath: selectedConfig?.dbPath,
         },
         [QueryKey.DatabaseTableData, selectedConfig?.ssh.hostName, selectedConfig?.dbPath, selectedTable]
@@ -40,7 +40,7 @@ export default function NavigationMenu() {
     const { refetch: refetchTableSchema } = useTableServiceGetApiTableByNameSchema(
         {
             name: selectedTable?.name ?? '',
-            sshHost: selectedConfig?.ssh.hostName,
+            hostName: selectedConfig?.ssh.hostName,
             dbPath: selectedConfig?.dbPath,
         },
         [QueryKey.DatabaseTableSchema, selectedConfig?.ssh.hostName, selectedConfig?.dbPath, selectedTable]

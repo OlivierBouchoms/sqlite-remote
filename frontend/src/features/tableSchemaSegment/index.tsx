@@ -19,7 +19,7 @@ export const TableSchemaSegment = ({ active, onLoadingChange }: TableSchemaSegme
     const { data, isLoading, error, refetch, isFetched } = useTableServiceGetApiTableByNameSchema(
         {
             name: selectedTable?.name ?? '',
-            sshHost: selectedConfig?.ssh.hostName,
+            hostName: selectedConfig?.ssh.hostName,
             dbPath: selectedConfig?.dbPath,
         },
         [QueryKey.DatabaseTableSchema, selectedConfig?.ssh.hostName, selectedConfig?.dbPath, selectedTable]

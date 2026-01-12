@@ -12,7 +12,6 @@ export const en = {
             api: {
                 databaseOperationError: {
                     SshConfigInvalid: 'The SSH configuration for the specified host could not be found or could not be parsed.',
-                    SshHostNotFound: 'The SSH host could not be found in the SSH configuration.',
                     ConnectFailed: 'The connection to the remote server failed.',
                     ConnectTimeOut: 'The connection to the remote server timed out.',
                     DatabaseNotFound: 'The database file was not found on the remote server.',

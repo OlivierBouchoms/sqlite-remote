@@ -7,14 +7,16 @@ export type DatabaseErrorResponseDto = {
     detail: DatabaseOperationError;
     instance: string;
     detailContext?: string | null;
+    sshHost?: DatabaseOperationSshHostDto;
 };
 
-export type DatabaseOperationError = 'SshConfigInvalid' | 'SshHostNotFound' | 'ConnectFailed' | 'ConnectTimeOut' | 'DatabaseNotFound' | 'DatabaseCommandFailed' | 'DatabaseCommandTimeOut' | 'RemoteCommandFailed' | 'RemoteCommandTimeOut';
+export type DatabaseOperationError = 'SshConfigInvalid' | 'ConnectFailed' | 'ConnectTimeOut' | 'DatabaseNotFound' | 'DatabaseCommandFailed' | 'DatabaseCommandTimeOut' | 'RemoteCommandFailed' | 'RemoteCommandTimeOut';
 
 export type DatabaseOperationSshHostDto = {
     name: string;
     hostName: string;
     port: number;
+    origin: SshHostOrigin;
     user: string;
 };
 
@@ -24,7 +26,7 @@ export type ServerConnectResponseDto = {
 };
 
 export type ServerQueryRequestDto = {
-    sshHost?: string | null;
+    host?: SshHostRequestDto;
     dbPath?: string | null;
     commandText?: string | null;
 };
@@ -33,6 +35,15 @@ export type ServerQueryResponseDto = {
     resultSets: Array<Array<{
         [key: string]: unknown;
     }>>;
+};
+
+export type SshHostOrigin = 'SshConfig' | 'Inline';
+
+export type SshHostRequestDto = {
+    hostName?: string | null;
+    user?: string | null;
+    port?: number | null;
+    identityFilePath?: string | null;
 };
 
 export type TableDataResponseDto = {
@@ -66,7 +77,10 @@ export type TableSchemaResponseDto = {
 
 export type GetApiServerConnectionData = {
     dbPath?: string;
-    sshHost?: string;
+    hostHostName?: string;
+    hostIdentityFilePath?: string;
+    hostPort?: number;
+    hostUser?: string;
 };
 
 export type GetApiServerConnectionResponse = ServerConnectResponseDto;
@@ -79,23 +93,32 @@ export type PostApiServerQueryResponse = ServerQueryResponseDto;
 
 export type GetApiTableData = {
     dbPath?: string;
-    sshHost?: string;
+    hostName?: string;
+    identityFilePath?: string;
+    port?: number;
+    user?: string;
 };
 
 export type GetApiTableResponse = TableIndexResponseDto;
 
 export type GetApiTableByNameDataData = {
     dbPath?: string;
+    hostName?: string;
+    identityFilePath?: string;
     name: string;
-    sshHost?: string;
+    port?: number;
+    user?: string;
 };
 
 export type GetApiTableByNameDataResponse = TableDataResponseDto;
 
 export type GetApiTableByNameSchemaData = {
     dbPath?: string;
+    hostName?: string;
+    identityFilePath?: string;
     name: string;
-    sshHost?: string;
+    port?: number;
+    user?: string;
 };
 
 export type GetApiTableByNameSchemaResponse = TableSchemaResponseDto;

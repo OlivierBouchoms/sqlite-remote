@@ -29,7 +29,7 @@ export const DatabaseConnectionTest = ({ form }: DatabaseConnectionTestProps) =>
         isFetching: isFetchingConnection,
     } = useServerServiceGetApiServerConnection<ServerConnectResponseDto, { body?: DatabaseErrorResponseDto }>(
         {
-            sshHost: form.watch(form.fieldNames.hostName),
+            hostHostName: form.watch(form.fieldNames.hostName),
             dbPath: form.watch(form.fieldNames.dbPath),
         },
         [QueryKey.DatabaseConnection, form.watch(form.fieldNames.hostName), form.watch(form.fieldNames.dbPath)]

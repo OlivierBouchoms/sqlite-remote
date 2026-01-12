@@ -26,18 +26,21 @@ export const $DatabaseErrorResponseDto = {
         detailContext: {
             type: 'string',
             nullable: true
+        },
+        sshHost: {
+            '$ref': '#/components/schemas/DatabaseOperationSshHostDto'
         }
     },
     additionalProperties: false
 } as const;
 
 export const $DatabaseOperationError = {
-    enum: ['SshConfigInvalid', 'SshHostNotFound', 'ConnectFailed', 'ConnectTimeOut', 'DatabaseNotFound', 'DatabaseCommandFailed', 'DatabaseCommandTimeOut', 'RemoteCommandFailed', 'RemoteCommandTimeOut'],
+    enum: ['SshConfigInvalid', 'ConnectFailed', 'ConnectTimeOut', 'DatabaseNotFound', 'DatabaseCommandFailed', 'DatabaseCommandTimeOut', 'RemoteCommandFailed', 'RemoteCommandTimeOut'],
     type: 'string'
 } as const;
 
 export const $DatabaseOperationSshHostDto = {
-    required: ['hostName', 'name', 'port', 'user'],
+    required: ['hostName', 'name', 'origin', 'port', 'user'],
     type: 'object',
     properties: {
         name: {
@@ -51,6 +54,9 @@ export const $DatabaseOperationSshHostDto = {
         port: {
             type: 'integer',
             format: 'int32'
+        },
+        origin: {
+            '$ref': '#/components/schemas/SshHostOrigin'
         },
         user: {
             minLength: 1,
@@ -78,9 +84,8 @@ export const $ServerConnectResponseDto = {
 export const $ServerQueryRequestDto = {
     type: 'object',
     properties: {
-        sshHost: {
-            type: 'string',
-            nullable: true
+        host: {
+            '$ref': '#/components/schemas/SshHostRequestDto'
         },
         dbPath: {
             type: 'string',
@@ -106,6 +111,35 @@ export const $ServerQueryResponseDto = {
                     type: 'object'
                 }
             }
+        }
+    },
+    additionalProperties: false
+} as const;
+
+export const $SshHostOrigin = {
+    enum: ['SshConfig', 'Inline'],
+    type: 'string'
+} as const;
+
+export const $SshHostRequestDto = {
+    type: 'object',
+    properties: {
+        hostName: {
+            type: 'string',
+            nullable: true
+        },
+        user: {
+            type: 'string',
+            nullable: true
+        },
+        port: {
+            type: 'integer',
+            format: 'int32',
+            nullable: true
+        },
+        identityFilePath: {
+            type: 'string',
+            nullable: true
         }
     },
     additionalProperties: false

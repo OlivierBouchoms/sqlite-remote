@@ -4,24 +4,36 @@ import { UseMutationOptions, UseQueryOptions, useMutation, useQuery } from "@tan
 import { ServerService, TableService } from "../requests/services.gen";
 import { ServerQueryRequestDto } from "../requests/types.gen";
 import * as Common from "./common";
-export const useServerServiceGetApiServerConnection = <TData = Common.ServerServiceGetApiServerConnectionDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ dbPath, sshHost }: {
+export const useServerServiceGetApiServerConnection = <TData = Common.ServerServiceGetApiServerConnectionDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ dbPath, hostHostName, hostIdentityFilePath, hostPort, hostUser }: {
   dbPath?: string;
-  sshHost?: string;
-} = {}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseServerServiceGetApiServerConnectionKeyFn({ dbPath, sshHost }, queryKey), queryFn: () => ServerService.getApiServerConnection({ dbPath, sshHost }) as TData, ...options });
-export const useTableServiceGetApiTable = <TData = Common.TableServiceGetApiTableDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ dbPath, sshHost }: {
+  hostHostName?: string;
+  hostIdentityFilePath?: string;
+  hostPort?: number;
+  hostUser?: string;
+} = {}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseServerServiceGetApiServerConnectionKeyFn({ dbPath, hostHostName, hostIdentityFilePath, hostPort, hostUser }, queryKey), queryFn: () => ServerService.getApiServerConnection({ dbPath, hostHostName, hostIdentityFilePath, hostPort, hostUser }) as TData, ...options });
+export const useTableServiceGetApiTable = <TData = Common.TableServiceGetApiTableDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ dbPath, hostName, identityFilePath, port, user }: {
   dbPath?: string;
-  sshHost?: string;
-} = {}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseTableServiceGetApiTableKeyFn({ dbPath, sshHost }, queryKey), queryFn: () => TableService.getApiTable({ dbPath, sshHost }) as TData, ...options });
-export const useTableServiceGetApiTableByNameData = <TData = Common.TableServiceGetApiTableByNameDataDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ dbPath, name, sshHost }: {
+  hostName?: string;
+  identityFilePath?: string;
+  port?: number;
+  user?: string;
+} = {}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseTableServiceGetApiTableKeyFn({ dbPath, hostName, identityFilePath, port, user }, queryKey), queryFn: () => TableService.getApiTable({ dbPath, hostName, identityFilePath, port, user }) as TData, ...options });
+export const useTableServiceGetApiTableByNameData = <TData = Common.TableServiceGetApiTableByNameDataDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ dbPath, hostName, identityFilePath, name, port, user }: {
   dbPath?: string;
+  hostName?: string;
+  identityFilePath?: string;
   name: string;
-  sshHost?: string;
-}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseTableServiceGetApiTableByNameDataKeyFn({ dbPath, name, sshHost }, queryKey), queryFn: () => TableService.getApiTableByNameData({ dbPath, name, sshHost }) as TData, ...options });
-export const useTableServiceGetApiTableByNameSchema = <TData = Common.TableServiceGetApiTableByNameSchemaDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ dbPath, name, sshHost }: {
+  port?: number;
+  user?: string;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseTableServiceGetApiTableByNameDataKeyFn({ dbPath, hostName, identityFilePath, name, port, user }, queryKey), queryFn: () => TableService.getApiTableByNameData({ dbPath, hostName, identityFilePath, name, port, user }) as TData, ...options });
+export const useTableServiceGetApiTableByNameSchema = <TData = Common.TableServiceGetApiTableByNameSchemaDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ dbPath, hostName, identityFilePath, name, port, user }: {
   dbPath?: string;
+  hostName?: string;
+  identityFilePath?: string;
   name: string;
-  sshHost?: string;
-}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseTableServiceGetApiTableByNameSchemaKeyFn({ dbPath, name, sshHost }, queryKey), queryFn: () => TableService.getApiTableByNameSchema({ dbPath, name, sshHost }) as TData, ...options });
+  port?: number;
+  user?: string;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseTableServiceGetApiTableByNameSchemaKeyFn({ dbPath, hostName, identityFilePath, name, port, user }, queryKey), queryFn: () => TableService.getApiTableByNameSchema({ dbPath, hostName, identityFilePath, name, port, user }) as TData, ...options });
 export const useServerServicePostApiServerQuery = <TData = Common.ServerServicePostApiServerQueryMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
   requestBody?: ServerQueryRequestDto;
 }, TContext>, "mutationFn">) => useMutation<TData, TError, {

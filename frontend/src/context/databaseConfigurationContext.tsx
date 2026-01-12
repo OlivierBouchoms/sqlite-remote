@@ -30,7 +30,7 @@ export function DatabaseConfigurationContextProvider({ children }: PropsWithChil
     } = useTableServiceGetApiTable(
         {
             dbPath: config?.dbPath,
-            sshHost: config?.ssh.hostName,
+            hostName: config?.ssh.hostName,
         },
         [QueryKey.DatabaseTables, config?.id],
         {
