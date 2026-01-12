@@ -50,6 +50,10 @@ jobs:
           ssh-keygen -f ~/.ssh/id_sqlite_remote -t ed25519 -N ""
           chmod 600 ~/.ssh/id_sqlite_remote
           chmod 644 ~/.ssh/id_sqlite_remote.pub
+      - name: Start SSH agent
+        run: |
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_sqlite_remote
       - name: Launch mock servers
         run: docker compose up -d
         working-directory: ./mock-server
