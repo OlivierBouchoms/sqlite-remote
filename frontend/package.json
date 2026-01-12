@@ -12,7 +12,7 @@
         "lint:fix": "eslint . --fix",
         "style": "prettier . --check --ignore-unknown",
         "style:fix": "prettier . --write --ignore-unknown",
-        "ts": "tsc -p . --noEmit"
+        "ts": "tsc --project tsconfig.app.json --noEmit"
     },
     "lint-staged": {
         "**/*": [
