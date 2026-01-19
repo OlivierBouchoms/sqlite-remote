@@ -33,7 +33,7 @@ public class ServerController(IDatabaseManager databaseManager) : Controller
     [ProducesResponseType(500, Type = typeof(DatabaseErrorResponseDto))]
     public async Task<IActionResult> Query([FromBody] ServerQueryRequestDto dto)
     {
-        var host = new SshHostInput(dto.Host.HostName, dto.Host.User, dto.Host.Port);
+        var host = new SshHostInput(dto.Host.HostName, dto.Host.User, dto.Host.Port, dto.Host.IdentityFilePath);
         var result = await databaseManager.Query(new DatabaseQueryInput(host, dto.DbPath, dto.CommandText));
         
         if (result.Success)

@@ -16,7 +16,7 @@ public class TableController(IDatabaseManager databaseManager) : Controller
     [ProducesResponseType(500, Type = typeof(DatabaseErrorResponseDto))]
     public async Task<IActionResult> Index([FromQuery] SshHostRequestDto host, [FromQuery] TableIndexRequestDto dto)
     {
-        var hostInput = new SshHostInput(host.HostName, host.User, host.Port);
+        var hostInput = new SshHostInput(host.HostName, host.User, host.Port, host.IdentityFilePath);
         var result = await databaseManager.ListTables(new ListTablesInput(hostInput, dto.DbPath));
 
         if (result.Success)
@@ -24,10 +24,10 @@ public class TableController(IDatabaseManager databaseManager) : Controller
             var tables = result.Tables
                 .Select(t => new TableIndexTableDto(t.Name))
                 .ToArray();
-            
+
             return Ok(new TableIndexResponseDto(tables));
         }
-        
+
         HttpContext.Items[nameof(DatabaseErrorResponseDto.SshHost)] = DatabaseOperationSshHostDto.FromOrDefault(result.SshHost);
 
         return Problem(result.Error?.ToString());
@@ -38,7 +38,7 @@ public class TableController(IDatabaseManager databaseManager) : Controller
     [ProducesResponseType(500, Type = typeof(DatabaseErrorResponseDto))]
     public async Task<IActionResult> GetData([FromRoute] string name, [FromQuery] SshHostRequestDto host, [FromQuery] TableDataRequestDto dto)
     {
-        var hostInput = new SshHostInput(host.HostName, host.User, host.Port);
+        var hostInput = new SshHostInput(host.HostName, host.User, host.Port, host.IdentityFilePath);
         var result = await databaseManager.GetTableData(new GetTableDataInput(name, hostInput, dto.DbPath));
 
         if (result.Success)
@@ -47,16 +47,17 @@ public class TableController(IDatabaseManager databaseManager) : Controller
         }
 
         HttpContext.Items[nameof(DatabaseErrorResponseDto.SshHost)] = DatabaseOperationSshHostDto.FromOrDefault(result.SshHost);
-        
+
         return Problem(result.Error?.ToString());
     }
 
     [HttpGet("{name}/schema")]
     [ProducesResponseType(200, Type = typeof(TableSchemaResponseDto))]
     [ProducesResponseType(500, Type = typeof(DatabaseErrorResponseDto))]
-    public async Task<IActionResult> GetSchema([FromRoute] string name, [FromQuery] [Required] SshHostRequestDto host, [FromQuery] [Required] TableDataRequestDto dto)
+    public async Task<IActionResult> GetSchema([FromRoute] string name, [FromQuery] [Required] SshHostRequestDto host,
+        [FromQuery] [Required] TableDataRequestDto dto)
     {
-        var hostInput = new SshHostInput(host.HostName, host.User, host.Port);
+        var hostInput = new SshHostInput(host.HostName, host.User, host.Port, host.IdentityFilePath);
         var result = await databaseManager.GetTableSchema(new GetTableSchemaInput(name, hostInput, dto.DbPath));
 
         if (result.Success)
@@ -64,12 +65,12 @@ public class TableController(IDatabaseManager databaseManager) : Controller
             var columns = result.Columns
                 .Select(c => new TableSchemaColumnDto(c.ColumnId, c.Name, c.Type, c.Required, c.DefaultValue, c.PrimaryKey))
                 .ToArray();
-            
+
             return Ok(new TableSchemaResponseDto(columns));
         }
 
         HttpContext.Items[nameof(DatabaseErrorResponseDto.SshHost)] = DatabaseOperationSshHostDto.FromOrDefault(result.SshHost);
-        
+
         return Problem(result.Error?.ToString());
     }
 }
