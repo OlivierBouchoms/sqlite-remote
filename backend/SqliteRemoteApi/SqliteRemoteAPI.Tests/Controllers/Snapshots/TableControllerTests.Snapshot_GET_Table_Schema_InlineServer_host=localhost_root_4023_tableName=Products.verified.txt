@@ -1,0 +1,87 @@
+﻿{
+  Columns: [
+    {
+      Name: ProductID,
+      Type: INTEGER,
+      Required: true,
+      PrimaryKey: true
+    },
+    {
+      ColumnId: 1,
+      Name: ProductName,
+      Type: TEXT,
+      Required: true,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 2,
+      Name: SupplierID,
+      Type: INTEGER,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 3,
+      Name: CategoryID,
+      Type: INTEGER,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 4,
+      Name: QuantityPerUnit,
+      Type: TEXT,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 5,
+      Name: UnitPrice,
+      Required: false,
+      DefaultValue: {
+        ValueKind: String
+      },
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 6,
+      Name: UnitsInStock,
+      Type: INTEGER,
+      Required: false,
+      DefaultValue: {
+        ValueKind: String
+      },
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 7,
+      Name: UnitsOnOrder,
+      Type: INTEGER,
+      Required: false,
+      DefaultValue: {
+        ValueKind: String
+      },
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 8,
+      Name: ReorderLevel,
+      Type: INTEGER,
+      Required: false,
+      DefaultValue: {
+        ValueKind: String
+      },
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 9,
+      Name: Discontinued,
+      Type: TEXT,
+      Required: true,
+      DefaultValue: {
+        ValueKind: String
+      },
+      PrimaryKey: false
+    }
+  ]
+}

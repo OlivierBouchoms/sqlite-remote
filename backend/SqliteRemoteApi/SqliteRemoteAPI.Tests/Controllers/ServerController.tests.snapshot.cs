@@ -46,7 +46,7 @@ public partial class ServerControllerTests
         var response = await client.GetAsync(queryString);
 
         await Verify(await response.Content.ReadFromJsonAsync<ServerConnectResponseDto>(), SnapshotSettings.Default)
-            .UseParameters(string.Join("_", host.HostName, host.User, host.Port));
+            .UseParameters(host);
     }
 
     [ClassData(typeof(MockServerClassData))]
@@ -55,6 +55,21 @@ public partial class ServerControllerTests
     {
         var client = _factory.CreateClient();
         var requestDto = new ServerQueryRequestDto(new SshHostRequestDto(host), MockDatabase.Path,
+            "SELECT CategoryID, CategoryName, Description FROM Categories ORDER BY CategoryID LIMIT 3");
+
+        var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
+
+        response.EnsureSuccessStatusCode();
+
+        await VerifyExtensions.VerifyAndFormat<ServerQueryResponseDto>(response, SnapshotSettings.Default, v => v.UseParameters(host));
+    }
+
+    [ClassData(typeof(InlineMockServerClassData))]
+    [Theory]
+    public async Task Snapshot_POST_Server_Query_WhenValidSelectQueryWithResults_InlineServer(InlineMockServer host)
+    {
+        var client = _factory.CreateClient();
+        var requestDto = new ServerQueryRequestDto(new SshHostRequestDto(host.HostName, host.User, host.Port, host.IdentityFilePath), MockDatabase.Path,
             "SELECT CategoryID, CategoryName, Description FROM Categories ORDER BY CategoryID LIMIT 3");
 
         var response = await client.PostAsJsonAsync("/api/server/query", requestDto);
