@@ -1,4 +1,4 @@
-import { Button } from '@radix-ui/themes';
+import { Button, Separator } from '@radix-ui/themes';
 import { DataList } from '../dataList';
 import { useServerServiceGetApiServerConnection } from '../../generated/api/queries';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,6 @@ import { ConnectionBadge } from '../connectionBadge';
 import { QueryKey } from '../../domain/hooks/common/QueryKey.ts';
 import { DatabaseErrorResponseDto, ServerConnectResponseDto } from '../../generated/api/requests';
 import { ErrorCallout } from '../errorCallout';
-import { FormLabel } from '../form/label';
 
 type DatabaseConnectionTestProps = {
     form: {
@@ -45,7 +44,6 @@ export const DatabaseConnectionTest = ({ form }: DatabaseConnectionTestProps) =>
 
     return (
         <div className={styles.root}>
-            <FormLabel htmlFor='databaseConnectionTest' text={t('title')} />
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 'var(--space-2)' }}>
                 <Button onClick={() => fetchConnection()} disabled={!form.isValid || isFetchingConnection} type='button' variant='surface'>
                     {t('test')}
@@ -63,19 +61,22 @@ export const DatabaseConnectionTest = ({ form }: DatabaseConnectionTestProps) =>
                 />
             </div>
             {fetchConnectionSuccess && fetchConnectionData && (
-                <DataList
-                    items={[
-                        {
-                            label: t('table.hostName'),
-                            value: fetchConnectionData.sshHost.hostName,
-                        },
-                        {
-                            label: t('table.port'),
-                            value: fetchConnectionData.sshHost.port,
-                        },
-                        { label: t('table.user'), value: fetchConnectionData.sshHost.user },
-                    ]}
-                />
+                <>
+                    <Separator orientation='horizontal' size='4' />
+                    <DataList
+                        items={[
+                            {
+                                label: t('table.hostName'),
+                                value: fetchConnectionData.sshHost.hostName,
+                            },
+                            {
+                                label: t('table.port'),
+                                value: fetchConnectionData.sshHost.port,
+                            },
+                            { label: t('table.user'), value: fetchConnectionData.sshHost.user },
+                        ]}
+                    />
+                </>
             )}
             {!!fetchConnectionError && <ErrorCallout error={fetchConnectionError} />}
         </div>
