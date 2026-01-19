@@ -7,10 +7,10 @@
     }
 
     svg {
-        color: var(--accent-12)
+        color: var(--accent-12);
     }
 }
 
-.trigger[data-state="open"] {
+.trigger[data-state='open'] {
     background: transparent;
 }

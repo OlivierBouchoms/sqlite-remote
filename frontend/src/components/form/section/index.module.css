@@ -7,7 +7,7 @@
     margin: var(--space-3) 0;
 }
 
-.header[data-collapsible="true"] {
+.header[data-collapsible='true'] {
     cursor: pointer;
 }
 
@@ -36,6 +36,6 @@
     border-bottom: 1px solid var(--gray-7);
 }
 
-.content[data-state="open"] {
+.content[data-state='open'] {
     border-bottom-style: none;
 }

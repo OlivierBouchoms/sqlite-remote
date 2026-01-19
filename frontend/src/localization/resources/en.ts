@@ -28,8 +28,7 @@ export const en = {
                     title: 'Add data source',
                     advancedSection: {
                         title: 'Advanced',
-                        description:
-                            'Only configure these values if the host is not present in your SSH config file, or need to override SSH config values.',
+                        description: 'Only configure these values if the host is not present in your SSH config file, or need to override SSH config values.',
                     },
                     connectionTestSection: {
                         title: 'Connection status',
