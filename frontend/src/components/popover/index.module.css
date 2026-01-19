@@ -1,0 +1,16 @@
+.trigger {
+    height: 100%;
+
+    &:hover {
+        background: transparent;
+        cursor: pointer;
+    }
+
+    svg {
+        color: var(--accent-12)
+    }
+}
+
+.trigger[data-state="open"] {
+    background: transparent;
+}
