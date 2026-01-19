@@ -1,0 +1,41 @@
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin: var(--space-3) 0;
+}
+
+.header[data-collapsible="true"] {
+    cursor: pointer;
+}
+
+.title {
+    margin-bottom: 0;
+}
+
+.trigger {
+    cursor: pointer;
+    height: 100%;
+
+    &:hover {
+        background: transparent;
+        cursor: pointer;
+    }
+
+    svg {
+        color: var(--accent-12);
+    }
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    border-bottom: 1px solid var(--gray-7);
+}
+
+.content[data-state="open"] {
+    border-bottom-style: none;
+}
