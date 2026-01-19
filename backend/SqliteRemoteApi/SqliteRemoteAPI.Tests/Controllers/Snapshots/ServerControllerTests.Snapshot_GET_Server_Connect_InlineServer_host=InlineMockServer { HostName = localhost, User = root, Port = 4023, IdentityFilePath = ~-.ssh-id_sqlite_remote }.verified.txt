@@ -1,0 +1,10 @@
+﻿{
+  SshHost: {
+    Name: localhost,
+    HostName: localhost,
+    Port: 4023,
+    Origin: Inline,
+    User: root
+  },
+  DbPath: /db/sqlite.db
+}

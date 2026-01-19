@@ -1,7 +1,17 @@
-.label {
+.root {
     display: flex;
-    font-weight: bold;
+    flex-direction: row;
     align-items: center;
-    column-gap: var(--space-1);
+    gap: var(--space-1);
     margin-bottom: var(--space-1);
+}
+
+.label {
+    font-weight: bold;
+}
+
+.description {
+    font-weight: normal;
+    font-size: var(--font-size-2);
+    margin: 0;
 }

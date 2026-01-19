@@ -11,11 +11,6 @@ public enum DatabaseOperationError
     SshConfigInvalid,
     
     /// <summary>
-    /// The SSH host could not be found in the SSH configuration.
-    /// </summary>
-    SshHostNotFound,
-    
-    /// <summary>
     /// The connection to the remote server failed.
     /// </summary>
     ConnectFailed,

@@ -8,7 +8,10 @@ import type { GetApiServerConnectionData, GetApiServerConnectionResponse, PostAp
 export class ServerService {
     /**
      * @param data The data for the request.
-     * @param data.sshHost
+     * @param data.hostHostName
+     * @param data.hostUser
+     * @param data.hostPort
+     * @param data.hostIdentityFilePath
      * @param data.dbPath
      * @returns ServerConnectResponseDto OK
      * @throws ApiError
@@ -18,7 +21,10 @@ export class ServerService {
             method: 'GET',
             url: '/api/server/connection',
             query: {
-                SshHost: data.sshHost,
+                'Host.HostName': data.hostHostName,
+                'Host.User': data.hostUser,
+                'Host.Port': data.hostPort,
+                'Host.IdentityFilePath': data.hostIdentityFilePath,
                 DbPath: data.dbPath
             },
             errors: {
@@ -50,7 +56,10 @@ export class ServerService {
 export class TableService {
     /**
      * @param data The data for the request.
-     * @param data.sshHost
+     * @param data.hostName
+     * @param data.user
+     * @param data.port
+     * @param data.identityFilePath
      * @param data.dbPath
      * @returns TableIndexResponseDto OK
      * @throws ApiError
@@ -60,7 +69,10 @@ export class TableService {
             method: 'GET',
             url: '/api/table',
             query: {
-                SshHost: data.sshHost,
+                HostName: data.hostName,
+                User: data.user,
+                Port: data.port,
+                IdentityFilePath: data.identityFilePath,
                 DbPath: data.dbPath
             },
             errors: {
@@ -72,7 +84,10 @@ export class TableService {
     /**
      * @param data The data for the request.
      * @param data.name
-     * @param data.sshHost
+     * @param data.hostName
+     * @param data.user
+     * @param data.port
+     * @param data.identityFilePath
      * @param data.dbPath
      * @returns TableDataResponseDto OK
      * @throws ApiError
@@ -85,7 +100,10 @@ export class TableService {
                 name: data.name
             },
             query: {
-                SshHost: data.sshHost,
+                HostName: data.hostName,
+                User: data.user,
+                Port: data.port,
+                IdentityFilePath: data.identityFilePath,
                 DbPath: data.dbPath
             },
             errors: {
@@ -97,7 +115,10 @@ export class TableService {
     /**
      * @param data The data for the request.
      * @param data.name
-     * @param data.sshHost
+     * @param data.hostName
+     * @param data.user
+     * @param data.port
+     * @param data.identityFilePath
      * @param data.dbPath
      * @returns TableSchemaResponseDto OK
      * @throws ApiError
@@ -110,7 +131,10 @@ export class TableService {
                 name: data.name
             },
             query: {
-                SshHost: data.sshHost,
+                HostName: data.hostName,
+                User: data.user,
+                Port: data.port,
+                IdentityFilePath: data.identityFilePath,
                 DbPath: data.dbPath
             },
             errors: {

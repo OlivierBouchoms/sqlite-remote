@@ -13,7 +13,13 @@ using SshNet.Agent;
 
 namespace SqliteRemoteApi.Manager;
 
-public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientFactory sshClientFactory, IPathTransformer pathTransformer, IOptions<SshOptions> sshOptions, ILogger<SqLiteDatabaseManager> logger) : IDatabaseManager
+public class SqLiteDatabaseManager(
+    ISshConfigParser sshConfigParser,
+    ISshClientFactory sshClientFactory,
+    ILocalPathTransformer localPathTransformer,
+    IRemotePathTransformer remotePathTransformer,
+    IOptions<SshOptions> sshOptions,
+    ILogger<SqLiteDatabaseManager> logger) : IDatabaseManager
 {
     /// <summary>
     /// Timeout for connecting to the remote host
@@ -32,7 +38,7 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientF
 
     public async Task<DatabaseConnectResult> Connect(DatabaseConnectInput input)
     {
-        var connectionResult = await Connect(input.HostName, input.DbPath);
+        var connectionResult = await Connect(input.Host, input.DbPath);
 
         if (!connectionResult.Success)
             return new DatabaseConnectResult(false, connectionResult.SshHost, connectionResult.DbPath, connectionResult.Error);
@@ -52,12 +58,12 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientF
         }
         catch (OperationCanceledException e)
         {
-            logger.LogWarning(e, "Check if sqlite3 binary exists on {SshHost} timed out", input.HostName);
+            logger.LogWarning(e, "Check if sqlite3 binary exists on {SshHost} timed out", input.Host.HostName);
             return new(false, connectionResult.SshHost, connectionResult.DbPath, DatabaseOperationError.RemoteCommandTimeOut);
         }
         catch (Exception e)
         {
-            logger.LogWarning(e, "Check if sqlite3 binary exists on {SshHost} failed", input.HostName);
+            logger.LogWarning(e, "Check if sqlite3 binary exists on {SshHost} failed", input.Host.HostName);
             return new(false, connectionResult.SshHost, connectionResult.DbPath, DatabaseOperationError.RemoteCommandFailed);
         }
         finally
@@ -68,7 +74,7 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientF
 
     public async Task<DatabaseQueryResult> Query(DatabaseQueryInput input)
     {
-        var connectionResult = await Connect(input.HostName, input.DbPath);
+        var connectionResult = await Connect(input.Host, input.DbPath);
 
         if (!connectionResult.Success)
             return new DatabaseQueryResult([], false, connectionResult.SshHost, connectionResult.DbPath, connectionResult.Error);
@@ -93,12 +99,14 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientF
         }
         catch (OperationCanceledException e)
         {
-            logger.LogWarning(e, "Executing command for {DbPath} ({AbsolutePath}) on {SshHost} timed out. Command text:\n{CommandText}", input.DbPath, connectionResult.DbPath, input.HostName, input.CommandText);
+            logger.LogWarning(e, "Executing command for {DbPath} ({AbsolutePath}) on {SshHost} timed out. Command text:\n{CommandText}", input.DbPath,
+                connectionResult.DbPath, input.Host.HostName, input.CommandText);
             return new([], false, connectionResult.SshHost, connectionResult.DbPath, DatabaseOperationError.DatabaseCommandTimeOut);
         }
         catch (Exception e)
         {
-            logger.LogWarning(e, "Executing command for {DbPath} ({AbsolutePath}) on {SshHost} failed. Command text:\n{CommandText}", input.DbPath, connectionResult.DbPath, input.HostName, input.CommandText);
+            logger.LogWarning(e, "Executing command for {DbPath} ({AbsolutePath}) on {SshHost} failed. Command text:\n{CommandText}", input.DbPath,
+                connectionResult.DbPath, input.Host.HostName, input.CommandText);
             return new([], false, connectionResult.SshHost, connectionResult.DbPath, DatabaseOperationError.DatabaseCommandFailed);
         }
         finally
@@ -109,7 +117,7 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientF
 
     public async Task<ListTablesResult> ListTables(ListTablesInput input)
     {
-        var connectionResult = await Connect(input.HostName, input.DbPath);
+        var connectionResult = await Connect(input.Host, input.DbPath);
 
         if (!connectionResult.Success)
             return new ListTablesResult([], false, connectionResult.SshHost, connectionResult.DbPath, connectionResult.Error);
@@ -134,12 +142,14 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientF
         }
         catch (OperationCanceledException e)
         {
-            logger.LogWarning(e, "Fetching tables for {DbPath} ({AbsolutePath}) on {SshHost} timed out", input.DbPath, connectionResult.DbPath, input.HostName);
+            logger.LogWarning(e, "Fetching tables for {DbPath} ({AbsolutePath}) on {SshHost} timed out", input.DbPath, connectionResult.DbPath,
+                input.Host.HostName);
             return new([], false, connectionResult.SshHost, connectionResult.DbPath, DatabaseOperationError.DatabaseCommandTimeOut);
         }
         catch (Exception e)
         {
-            logger.LogWarning(e, "Fetching tables for {DbPath} ({AbsolutePath}) on {SshHost} failed", input.DbPath, connectionResult.DbPath, input.HostName);
+            logger.LogWarning(e, "Fetching tables for {DbPath} ({AbsolutePath}) on {SshHost} failed", input.DbPath, connectionResult.DbPath,
+                input.Host.HostName);
             return new([], false, connectionResult.SshHost, connectionResult.DbPath, DatabaseOperationError.DatabaseCommandFailed);
         }
         finally
@@ -150,7 +160,7 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientF
 
     public async Task<GetTableDataResult> GetTableData(GetTableDataInput input)
     {
-        var connectionResult = await Connect(input.HostName, input.DbPath);
+        var connectionResult = await Connect(input.Host, input.DbPath);
 
         if (!connectionResult.Success)
             return new GetTableDataResult([], false, connectionResult.SshHost, connectionResult.DbPath, connectionResult.Error);
@@ -173,12 +183,14 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientF
         }
         catch (OperationCanceledException e)
         {
-            logger.LogWarning(e, "Fetching data for {DbPath} ({AbsolutePath}) on {SshHost} timed out", input.DbPath, connectionResult.DbPath, input.HostName);
+            logger.LogWarning(e, "Fetching data for {DbPath} ({AbsolutePath}) on {SshHost} timed out", input.DbPath, connectionResult.DbPath,
+                input.Host.HostName);
             return new([], false, connectionResult.SshHost, connectionResult.DbPath, DatabaseOperationError.DatabaseCommandTimeOut);
         }
         catch (Exception e)
         {
-            logger.LogWarning(e, "Fetching data for {DbPath} ({AbsolutePath}) on {SshHost} failed", input.DbPath, connectionResult.DbPath, input.HostName);
+            logger.LogWarning(e, "Fetching data for {DbPath} ({AbsolutePath}) on {SshHost} failed", input.DbPath, connectionResult.DbPath,
+                input.Host.HostName);
             return new([], false, connectionResult.SshHost, connectionResult.DbPath, DatabaseOperationError.DatabaseCommandFailed);
         }
         finally
@@ -189,7 +201,7 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientF
 
     public async Task<GetTableSchemaResult> GetTableSchema(GetTableSchemaInput input)
     {
-        var connectionResult = await Connect(input.HostName, input.DbPath);
+        var connectionResult = await Connect(input.Host, input.DbPath);
 
         if (!connectionResult.Success)
             return new GetTableSchemaResult([], false, connectionResult.SshHost, connectionResult.DbPath, connectionResult.Error);
@@ -227,12 +239,14 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientF
         }
         catch (OperationCanceledException e)
         {
-            logger.LogWarning(e, "Fetching schema for {DbPath} ({AbsolutePath}) on {SshHost} timed out", input.DbPath, connectionResult.DbPath, input.HostName);
+            logger.LogWarning(e, "Fetching schema for {DbPath} ({AbsolutePath}) on {SshHost} timed out", input.DbPath, connectionResult.DbPath,
+                input.Host.HostName);
             return new([], false, connectionResult.SshHost, connectionResult.DbPath, DatabaseOperationError.DatabaseCommandTimeOut);
         }
         catch (Exception e)
         {
-            logger.LogWarning(e, "Fetching schema for {DbPath} ({AbsolutePath}) on {SshHost} failed", input.DbPath, connectionResult.DbPath, input.HostName);
+            logger.LogWarning(e, "Fetching schema for {DbPath} ({AbsolutePath}) on {SshHost} failed", input.DbPath, connectionResult.DbPath,
+                input.Host.HostName);
             return new([], false, connectionResult.SshHost, connectionResult.DbPath, DatabaseOperationError.DatabaseCommandFailed);
         }
         finally
@@ -244,14 +258,14 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientF
     /// <summary>
     /// Attempts to connect to the SSH host and verifies if the database file exists
     /// </summary>
-    async Task<DatabaseServerConnectResult> Connect(string hostName, string dbPath)
+    async Task<DatabaseServerConnectResult> Connect(SshHostInput input, string dbPath)
     {
         SshHost? sshHost;
 
         try
         {
             var sshConfig = await sshConfigParser.Parse(sshOptions.Value.ConfigPath);
-            sshHost = sshConfig.Hosts.FirstOrDefault(h => h.Name == hostName);
+            sshHost = sshConfig.Hosts.FirstOrDefault(h => h.Name == input.HostName);
         }
         catch (Exception e)
         {
@@ -260,7 +274,26 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientF
         }
 
         if (sshHost is null)
-            return new DatabaseServerConnectResult(null, null, false, null, DatabaseOperationError.SshHostNotFound);
+        {
+            // use inline host definition from user input
+            sshHost = new SshHost
+            {
+                Name = input.HostName,
+                HostName = input.HostName,
+                Port = input.Port ?? 22,
+                User = input.User ?? Environment.UserName,
+                Origin = SshHostOrigin.Inline,
+                IdentityFile = !string.IsNullOrEmpty(input.IdentityFilePath) ? localPathTransformer.GetAbsolutePath(input.IdentityFilePath) : null
+            };
+        }
+        else
+        {
+            // if provided, overwrite port and user
+            if (input.Port is not null) sshHost.Port = input.Port.Value;
+            if (input.User is not null) sshHost.User = input.User;
+            if (input.IdentityFilePath is not null)
+                sshHost.IdentityFile = !string.IsNullOrEmpty(input.IdentityFilePath) ? localPathTransformer.GetAbsolutePath(input.IdentityFilePath) : null;
+        }
 
         var client = sshClientFactory.CreateSshClient(sshHost);
 
@@ -289,7 +322,7 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientF
         {
             var pathTransformCts = new CancellationTokenSource(CommandTimeout);
 
-            absolutePath = await pathTransformer.Transform(dbPath, client, pathTransformCts.Token);
+            absolutePath = await remotePathTransformer.GetAbsolutePath(dbPath, client, pathTransformCts.Token);
 
             var fileExistsCommand = client.CreateCommand(string.Format("test -f '{0}'", absolutePath));
 
@@ -352,7 +385,7 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientF
     string ParseSqliteCommandError(SshCommand command)
     {
         if (command.ExitStatus == 0) return "";
-        
+
         var error = command.Error.Trim();
 
         if (error.EndsWith("^--- error here"))
@@ -362,7 +395,7 @@ public class SqLiteDatabaseManager(ISshConfigParser sshConfigParser, ISshClientF
 
         return error.TrimEnd();
     }
-    
+
     string SanitizeCommandText(string commandText)
     {
         return commandText

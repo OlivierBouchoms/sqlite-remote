@@ -1,3 +1,3 @@
 namespace SqliteRemoteApi.Models;
 
-public record DatabaseConnectInput(string HostName, string DbPath);
+public record DatabaseConnectInput(SshHostInput Host, string DbPath);

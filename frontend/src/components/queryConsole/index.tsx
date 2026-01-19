@@ -50,7 +50,18 @@ export const QueryConsole = ({ open }: Props) => {
         if (commandText.length === 0) {
             return;
         }
-        await postQuery({ requestBody: { dbPath: selectedConfig.dbPath, sshHost: selectedConfig.ssh.hostName, commandText: commandText } });
+        await postQuery({
+            requestBody: {
+                dbPath: selectedConfig.dbPath,
+                host: {
+                    hostName: selectedConfig.ssh.hostName,
+                    port: selectedConfig.ssh.port,
+                    user: selectedConfig.ssh.username,
+                    identityFilePath: selectedConfig.ssh.identityFilePath,
+                },
+                commandText: commandText,
+            },
+        });
     }, [getCommandTextToExecute, postQuery, selectedConfig]);
 
     const toolbarItems = useMemo((): ToolbarItemProps[] => {

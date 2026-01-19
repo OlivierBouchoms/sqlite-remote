@@ -14,8 +14,11 @@ export const DatabaseConnectionStatus = () => {
         isFetching: isFetchingConnection,
     } = useServerServiceGetApiServerConnection<ServerConnectResponseDto, { body?: DatabaseErrorResponseDto }>(
         {
-            sshHost: selectedConfig?.ssh.hostName,
+            hostHostName: selectedConfig?.ssh.hostName,
             dbPath: selectedConfig?.dbPath,
+            hostPort: selectedConfig?.ssh.port,
+            hostUser: selectedConfig?.ssh.username,
+            hostIdentityFilePath: selectedConfig?.ssh.identityFilePath,
         },
         undefined,
         {

@@ -12,7 +12,6 @@ export const en = {
             api: {
                 databaseOperationError: {
                     SshConfigInvalid: 'The SSH configuration for the specified host could not be found or could not be parsed.',
-                    SshHostNotFound: 'The SSH host could not be found in the SSH configuration.',
                     ConnectFailed: 'The connection to the remote server failed.',
                     ConnectTimeOut: 'The connection to the remote server timed out.',
                     DatabaseNotFound: 'The database file was not found on the remote server.',
@@ -27,6 +26,13 @@ export const en = {
             addDatabaseConfiguration: {
                 dialog: {
                     title: 'Add data source',
+                    advancedSection: {
+                        title: 'Advanced',
+                        description: 'Only configure these values if the host is not present in your SSH config file, or need to override SSH config values.',
+                    },
+                    connectionTestSection: {
+                        title: 'Connection status',
+                    },
                 },
                 form: {
                     type: {
@@ -39,13 +45,28 @@ export const en = {
                     },
                     remoteHost: {
                         label: 'Host',
-                        description: 'Name of the remote host, according to your SSH config file (~/.ssh/config)',
+                        description: 'Name of the remote host. This can be an address, hostname or host defined in the SSH config.',
                         placeholder: 'my-remote-host',
+                    },
+                    port: {
+                        label: 'Port',
+                        description: 'Port of the remote host. Leave empty to use the default value from the SSH config.',
+                        placeholder: '22',
+                    },
+                    username: {
+                        label: 'User',
+                        description: 'Username for the SSH connection. Leave empty to use the default value from the SSH config.',
+                        placeholder: 'ubuntu',
+                    },
+                    identityFilePath: {
+                        label: 'Identity file path',
+                        description: 'Path to the SSH identity file. Leave empty to use the default value from the SSH config.',
+                        placeholder: '~/.ssh/id_ed25519',
                     },
                     dbPath: {
                         label: 'SQLite file',
-                        description: 'Path to the database file on the remote host',
-                        placeholder: '/path/to/database.sqlite',
+                        description: 'Path to the database file on the remote host.',
+                        placeholder: '/path/to/database.db',
                     },
                     actions: {
                         cancel: 'Cancel',
@@ -108,7 +129,6 @@ export const en = {
                 connecting: 'Connecting',
             } satisfies ConnectionBadgeCopy,
             databaseConnectionTest: {
-                title: 'Connection status',
                 test: 'Test connection',
                 table: {
                     hostName: 'Address',
@@ -128,6 +148,10 @@ export const en = {
                 fallback: {
                     title: 'An unknown error has occurred',
                 },
+            },
+            formLabel: {
+                required: '{{label}}',
+                optional: '{{label}} (optional)',
             },
             table: {
                 cell: {

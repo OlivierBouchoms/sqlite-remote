@@ -34,8 +34,11 @@ export const DatabaseTablePage = () => {
     const { refetch: refetchTableData, isRefetching: isTableDataRefetching } = useTableServiceGetApiTableByNameData(
         {
             name: selectedTable?.name ?? '',
-            sshHost: selectedConfig?.ssh.hostName,
+            hostName: selectedConfig?.ssh.hostName,
             dbPath: selectedConfig?.dbPath,
+            port: selectedConfig?.ssh.port,
+            user: selectedConfig?.ssh.username,
+            identityFilePath: selectedConfig?.ssh.identityFilePath,
         },
         [QueryKey.DatabaseTableData, selectedConfig?.ssh.hostName, selectedConfig?.dbPath, selectedTable]
     );
@@ -43,8 +46,11 @@ export const DatabaseTablePage = () => {
     const { refetch: refetchTableSchema, isRefetching: isTableSchemaRefetching } = useTableServiceGetApiTableByNameSchema(
         {
             name: selectedTable?.name ?? '',
-            sshHost: selectedConfig?.ssh.hostName,
+            hostName: selectedConfig?.ssh.hostName,
             dbPath: selectedConfig?.dbPath,
+            port: selectedConfig?.ssh.port,
+            user: selectedConfig?.ssh.username,
+            identityFilePath: selectedConfig?.ssh.identityFilePath,
         },
         [QueryKey.DatabaseTableSchema, selectedConfig?.ssh.hostName, selectedConfig?.dbPath, selectedTable]
     );

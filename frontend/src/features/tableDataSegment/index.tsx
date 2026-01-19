@@ -24,8 +24,11 @@ export const TableDataSegment = ({ active, onLoadingChange }: TableSegmentProps)
     } = useTableServiceGetApiTableByNameData(
         {
             name: selectedTable?.name ?? '',
-            sshHost: selectedConfig?.ssh.hostName,
+            hostName: selectedConfig?.ssh.hostName,
             dbPath: selectedConfig?.dbPath,
+            port: selectedConfig?.ssh.port,
+            user: selectedConfig?.ssh.username,
+            identityFilePath: selectedConfig?.ssh.identityFilePath,
         },
         [QueryKey.DatabaseTableData, selectedConfig?.ssh.hostName, selectedConfig?.dbPath, selectedTable]
     );
@@ -39,8 +42,11 @@ export const TableDataSegment = ({ active, onLoadingChange }: TableSegmentProps)
     } = useTableServiceGetApiTableByNameSchema(
         {
             name: selectedTable?.name ?? '',
-            sshHost: selectedConfig?.ssh.hostName,
+            hostName: selectedConfig?.ssh.hostName,
             dbPath: selectedConfig?.dbPath,
+            port: selectedConfig?.ssh.port,
+            user: selectedConfig?.ssh.username,
+            identityFilePath: selectedConfig?.ssh.identityFilePath,
         },
         [QueryKey.DatabaseTableSchema, selectedConfig?.ssh.hostName, selectedConfig?.dbPath, selectedTable]
     );

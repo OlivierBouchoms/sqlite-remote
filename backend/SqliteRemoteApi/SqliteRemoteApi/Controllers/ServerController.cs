@@ -15,12 +15,15 @@ public class ServerController(IDatabaseManager databaseManager) : Controller
     [ProducesResponseType(500, Type = typeof(DatabaseErrorResponseDto))]
     public async Task<IActionResult> Connect([FromQuery] ServerConnectRequestDto dto)
     {
-        var result = await databaseManager.Connect(new DatabaseConnectInput(dto.SshHost, dto.DbPath));
+        var host = new SshHostInput(dto.Host.HostName, dto.Host.User, dto.Host.Port, dto.Host.IdentityFilePath);
+        var result = await databaseManager.Connect(new DatabaseConnectInput(host, dto.DbPath));
 
         if (result.Success)
         {
             return Ok(new ServerConnectResponseDto(DatabaseOperationSshHostDto.From(result.SshHost), result.DbPath!));
         }
+        
+        HttpContext.Items[nameof(DatabaseErrorResponseDto.SshHost)] = DatabaseOperationSshHostDto.FromOrDefault(result.SshHost);
 
         return Problem(result.Error?.ToString());
     }
@@ -30,7 +33,8 @@ public class ServerController(IDatabaseManager databaseManager) : Controller
     [ProducesResponseType(500, Type = typeof(DatabaseErrorResponseDto))]
     public async Task<IActionResult> Query([FromBody] ServerQueryRequestDto dto)
     {
-        var result = await databaseManager.Query(new DatabaseQueryInput(dto.SshHost, dto.DbPath, dto.CommandText));
+        var host = new SshHostInput(dto.Host.HostName, dto.Host.User, dto.Host.Port, dto.Host.IdentityFilePath);
+        var result = await databaseManager.Query(new DatabaseQueryInput(host, dto.DbPath, dto.CommandText));
         
         if (result.Success)
         {
@@ -38,6 +42,7 @@ public class ServerController(IDatabaseManager databaseManager) : Controller
         }
 
         HttpContext.Items[nameof(DatabaseErrorResponseDto.DetailContext)] = result.ErrorContext;
+        HttpContext.Items[nameof(DatabaseErrorResponseDto.SshHost)] = DatabaseOperationSshHostDto.FromOrDefault(result.SshHost);
 
         return Problem(result.Error?.ToString());
     }

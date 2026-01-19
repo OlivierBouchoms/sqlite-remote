@@ -2,9 +2,9 @@ using Renci.SshNet;
 
 namespace SqliteRemoteApi.Paths;
 
-public class RemotePathTransformer : IPathTransformer
+public class SshPathTransformer : IRemotePathTransformer
 {
-    public async Task<string> Transform(string path, ISshClient sshClient, CancellationToken cancelToken)
+    public async Task<string> GetAbsolutePath(string path, ISshClient sshClient, CancellationToken cancelToken)
     {
         if (!path.StartsWith("~")) return path;
         

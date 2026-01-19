@@ -4,6 +4,7 @@ import styles from './index.module.css';
 
 type CalloutProps = {
     type: 'info' | 'error';
+    variant?: RadixCallout.RootProps['variant'];
     title: string;
     description?: string | null | undefined;
 };
@@ -18,9 +19,9 @@ const ROLES: Record<CalloutProps['type'], RadixCallout.RootProps['role']> = {
     info: 'status',
 };
 
-export const Callout = ({ type, title, description }: CalloutProps) => {
+export const Callout = ({ type, variant, title, description }: CalloutProps) => {
     return (
-        <RadixCallout.Root color={COLORS[type]} role={ROLES[type]}>
+        <RadixCallout.Root color={COLORS[type]} variant={variant} role={ROLES[type]}>
             <RadixCallout.Icon>
                 <FaInfoCircle />
             </RadixCallout.Icon>
