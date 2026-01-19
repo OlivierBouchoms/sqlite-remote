@@ -14,6 +14,9 @@ type DatabaseConnectionTestProps = {
         fieldNames: {
             hostName: string;
             dbPath: string;
+            port: string;
+            user: string;
+            identityFilePath: string;
         };
         isValid: boolean;
         watch: (field: string) => any;
@@ -31,6 +34,9 @@ export const DatabaseConnectionTest = ({ form }: DatabaseConnectionTestProps) =>
         {
             hostHostName: form.watch(form.fieldNames.hostName),
             dbPath: form.watch(form.fieldNames.dbPath),
+            hostPort: form.watch(form.fieldNames.port),
+            hostUser: form.watch(form.fieldNames.user),
+            hostIdentityFilePath: form.watch(form.fieldNames.identityFilePath),
         },
         [QueryKey.DatabaseConnection, form.watch(form.fieldNames.hostName), form.watch(form.fieldNames.dbPath)]
     );

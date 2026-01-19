@@ -16,6 +16,9 @@ export const DatabaseConnectionStatus = () => {
         {
             hostHostName: selectedConfig?.ssh.hostName,
             dbPath: selectedConfig?.dbPath,
+            hostPort: selectedConfig?.ssh.port,
+            hostUser: selectedConfig?.ssh.username,
+            hostIdentityFilePath: selectedConfig?.ssh.identityFilePath,
         },
         undefined,
         {

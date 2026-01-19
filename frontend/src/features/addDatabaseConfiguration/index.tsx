@@ -18,6 +18,9 @@ type FormValues = {
     label: string;
     dbPath: string;
     hostName: string;
+    port?: number;
+    username?: string;
+    identityFilePath?: string;
 };
 
 export const AddDatabaseConfiguration = ({ open, onOpenChange }: Props) => {
@@ -40,6 +43,9 @@ export const AddDatabaseConfiguration = ({ open, onOpenChange }: Props) => {
             label: values.label,
             ssh: {
                 hostName: values.hostName,
+                username: values.username,
+                port: values.port ? parseInt(values.port as unknown as string) : undefined,
+                identityFilePath: values.identityFilePath,
             },
             dbPath: values.dbPath,
         }).then(() => onOpenChange(false));

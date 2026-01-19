@@ -31,6 +31,9 @@ export function DatabaseConfigurationContextProvider({ children }: PropsWithChil
         {
             dbPath: config?.dbPath,
             hostName: config?.ssh.hostName,
+            port: config?.ssh.port,
+            user: config?.ssh.username,
+            identityFilePath: config?.ssh.identityFilePath,
         },
         [QueryKey.DatabaseTables, config?.id],
         {
