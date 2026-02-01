@@ -21,11 +21,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=production
       - ASPNETCORE_HTTP_PORTS=80
-      - SSH_AUTH_SOCK=${SSH_AUTH_SOCK}
+      - SSH_AUTH_SOCK=/app/.ssh/auth_sock
     ports:
       - "7777:80"
     volumes:
       - ~/.ssh/config:/app/.ssh/config:ro
-      - ${SSH_AUTH_SOCK}:${SSH_AUTH_SOCK}
+      - ${SSH_AUTH_SOCK}:/app/.ssh/auth_sock
     extra_hosts:
       - "host.docker.internal:host-gateway"
