@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@types/node": "^20.19.22",
-    "handlebars": "^4.7.8",
+    "handlebars": "^4.7.9",
     "tsx": "^4.20.6"
   }
 }
