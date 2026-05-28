@@ -54,3 +54,17 @@ services:
       - ${HOME}/.ssh/id_sqlite_remote.pub:/root/.ssh/authorized_keys:ro
     ports:
       - "4124:22"
+
+  ubuntu-26_04:
+    image: olivierbouchoms/sqlite-remote-ci-ubuntu:26.04
+    build:
+      context: .
+      dockerfile: ubuntu-26_04/Dockerfile
+      tags:
+        - olivierbouchoms/sqlite-remote-ci-ubuntu:26.04
+      x-bake:
+        platforms: [linux/amd64, linux/arm64]
+    volumes:
+      - ${HOME}/.ssh/id_sqlite_remote.pub:/root/.ssh/authorized_keys:ro
+    ports:
+      - "4126:22"
