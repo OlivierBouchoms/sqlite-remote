@@ -1,0 +1,17 @@
+﻿{
+  Columns: [
+    {
+      Name: RegionID,
+      Type: INTEGER,
+      Required: true,
+      PrimaryKey: true
+    },
+    {
+      ColumnId: 1,
+      Name: RegionDescription,
+      Type: TEXT,
+      Required: true,
+      PrimaryKey: false
+    }
+  ]
+}
