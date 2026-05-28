@@ -1,0 +1,15 @@
+﻿{
+  Columns: [
+    {
+      Name: name,
+      Required: false,
+      PrimaryKey: false
+    },
+    {
+      ColumnId: 1,
+      Name: seq,
+      Required: false,
+      PrimaryKey: false
+    }
+  ]
+}

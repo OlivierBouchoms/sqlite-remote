@@ -29,4 +29,11 @@ export const templates: Templates = {
         version_snake_case: '24_04',
         port: 4124,
     },
+    'ubuntu-26_04': {
+        os: 'Ubuntu',
+        os_snake_case: 'ubuntu',
+        version: '26.04',
+        version_snake_case: '26_04',
+        port: 4126,
+    },
 };
