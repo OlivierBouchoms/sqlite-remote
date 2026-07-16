@@ -17,13 +17,35 @@ No software installation is required on the remote host - only the `sqlite3` bin
 
 The application can be run using Docker Compose. After starting, open [localhost:4444](http://localhost:4444) to access the application.
 
-(i) Important: 
+### 1. Add your SSH identity file to your SSH agent
 
-Add your SSH identity file to your SSH agent, otherwise the application can't access them when running in Docker. Example: `ssh-add ~/.ssh/id_sqlite_remote`
+This allows the application to access the remote server when running in Docker.
+
+```shell
+ssh-agent
+ssh-add ~/.ssh/id_sqlite_remote
+```
+
+### 2. Clone repository
 
 ```shell
 git clone https://github.com/OlivierBouchoms/sqlite-remote.git
 cd sqlite-remote
+```
+
+### 3. Configure .env (macOS)
+
+On macOS, set the DOCKER_SSH_AUTH_SOCK env variable:
+
+```shell
+echo "DOCKER_SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock" >> .env
+```
+
+### 4. Launch application
+
+(i) Pre built images aren't available yet, so the images will be built on your local machine. 
+
+```shell
 docker compose up -d
 ```
 
